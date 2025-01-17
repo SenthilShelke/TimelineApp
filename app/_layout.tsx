@@ -5,12 +5,21 @@ LogBox.ignoreAllLogs(true);
 
 export default function RootLayout() {
   return (
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }}
-        ></Stack.Screen>
-        <Stack.Screen name="+not-found" options={{}}></Stack.Screen>
-      </Stack>
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          headerShown: false, // This hides the header for the index screen
+        }}
+      />
+      {/* <Stack.Screen
+        name="about"
+        options={{ title: "About" }}
+      /> */}
+      <Stack.Screen
+        name="+not-found"
+        options={{ title: "Not Found" }}
+      />
+    </Stack>
   );
 }
