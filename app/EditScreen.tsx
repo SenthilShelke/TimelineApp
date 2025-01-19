@@ -134,7 +134,10 @@ const styles = StyleSheet.create({
     bottom: 650,
     left: 0,
     right: 0,
+    alignSelf: "center",
     alignItems: "center",
+    width: "50%",
+    marginLeft: "25%",
   },
   add_event_button: {
     borderWidth: 2,
@@ -143,6 +146,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 5,
     backgroundColor: "magenta",
+    alignItems: "center",
   },
   new_event_text: {
     fontFamily: "Futura",
