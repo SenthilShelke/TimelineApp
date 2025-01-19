@@ -7,24 +7,20 @@ import {
   TextInput,
   Keyboard,
   TouchableWithoutFeedback,
-  Modal,
   Alert,
-  Image,
 } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import EventEditor from "@/components/EventEditor";
+import Timeline from "@/components/Timeline";
 
 export default function EditScreen({ navigation }: { navigation: any }) {
   const scaleValue = useSharedValue(1);
   const inputRef = useRef<TextInput>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [modalVisible, setModalVisible] = useState(false); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [events, setEvents] = useState<{ title: string; date: string }[]>([]);
 
   useEffect(() => {
     const focusTimeout = setTimeout(() => {
@@ -50,6 +46,11 @@ export default function EditScreen({ navigation }: { navigation: any }) {
     setModalVisible(true);
   };
 
+  const handleSaveEvent = (newEvent: { title: string; date: string }) => {
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    setModalVisible(false);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -57,7 +58,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
           style={styles.input}
           ref={inputRef}
           placeholder="Title"
-          placeholderTextColor={"white"}
+          placeholderTextColor={"grey"}
         ></TextInput>
         <Pressable
           onPress={handleBackButton}
@@ -86,10 +87,13 @@ export default function EditScreen({ navigation }: { navigation: any }) {
           </Animated.View>
         </Pressable>
 
+        <Timeline events={events}></Timeline>
+
         <EventEditor
           visible={modalVisible}
-          onClose={() => setModalVisible(false)}></EventEditor>
- 
+          onClose={() => setModalVisible(false)}
+          onSave={handleSaveEvent}
+        ></EventEditor>
       </View>
     </TouchableWithoutFeedback>
   );

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Text,
   View,
@@ -9,23 +9,41 @@ import {
   TouchableWithoutFeedback,
   Modal,
   Alert,
-  Image,
 } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
+  onSave: (event: { date: string; title: string }) => void;
 };
 
-export default function EventEditor({ visible, onClose }: Props) {
+export default function EventEditor({ visible, onClose, onSave }: Props) {
   const inputRef = useRef<TextInput>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [title, setTitle] = useState("");
+  const scaleValue = useSharedValue(1);
+
+  const handleSave = () => {
+    if (!title.trim()) {
+      Alert.alert("Error", "Please enter an event title.");
+      return;
+    }
+
+    if (!selectedDate) {
+      Alert.alert("Error", "Please select a date.");
+      return;
+    }
+
+    // Save the event
+    onSave({ title, date: selectedDate.toLocaleDateString() });
+
+    // Reset fields after successful save
+    setTitle("");
+    setSelectedDate(null);
+    onClose();
+  };
 
   return visible ? (
     <Modal
@@ -46,8 +64,10 @@ export default function EventEditor({ visible, onClose }: Props) {
                 <TextInput
                   style={styles.eventTitleText}
                   placeholder="Event Title"
-                  placeholderTextColor="white"
+                  placeholderTextColor="grey"
                   maxLength={45}
+                  value={title}
+                  onChangeText={(text) => setTitle(text)}
                 />
               </View>
             </TouchableWithoutFeedback>
@@ -56,15 +76,19 @@ export default function EventEditor({ visible, onClose }: Props) {
               value={selectedDate || new Date()}
               mode="date"
               display="default"
-              onChange={(event, date) => setSelectedDate(date || selectedDate)}
+              onChange={(event, date) => {
+                if (date) {
+                  setSelectedDate(date);
+                }
+              }}
             />
 
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
               <View>
                 <TextInput
                   style={styles.descriptionText}
-                  placeholder="Description"
-                  placeholderTextColor="white"
+                  placeholder="Description(optional)"
+                  placeholderTextColor="grey"
                   multiline={true}
                   maxLength={260}
                   textAlign="left"
@@ -73,6 +97,17 @@ export default function EventEditor({ visible, onClose }: Props) {
               </View>
             </TouchableWithoutFeedback>
           </View>
+
+          <Pressable onPress={handleSave} style={styles.saveButtonWrapper}>
+            <Animated.View
+              style={[
+                styles.saveButton,
+                { transform: [{ scale: scaleValue }] },
+              ]}
+            >
+              <Text style={styles.saveButtonText}>Save</Text>
+            </Animated.View>
+          </Pressable>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -127,5 +162,30 @@ const styles = StyleSheet.create({
   dismissArea: {
     flex: 1,
     width: "100%",
+  },
+  saveButton: {
+    borderWidth: 2,
+    borderColor: "magenta",
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    backgroundColor: "magenta",
+    alignItems: "center",
+    bottom: 200,
+  },
+  saveButtonWrapper: {
+    position: "absolute",
+    bottom: 25,
+    left: 0,
+    right: 0,
+    alignSelf: "center",
+    alignItems: "center",
+    width: "50%",
+    marginLeft: "25%",
+  },
+  saveButtonText: {
+    color: "#1e1e1e",
+    fontSize: 20,
+    fontFamily: "Futura",
   },
 });
