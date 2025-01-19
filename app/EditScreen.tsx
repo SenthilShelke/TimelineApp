@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -7,13 +7,24 @@ import {
   TextInput,
   Keyboard,
   TouchableWithoutFeedback,
+  Modal,
+  Alert,
+  Image,
 } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import EventEditor from "@/components/EventEditor";
 
 export default function EditScreen({ navigation }: { navigation: any }) {
   const scaleValue = useSharedValue(1);
   const inputRef = useRef<TextInput>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [modalVisible, setModalVisible] = useState(false); 
 
   useEffect(() => {
     const focusTimeout = setTimeout(() => {
@@ -31,6 +42,14 @@ export default function EditScreen({ navigation }: { navigation: any }) {
     });
     navigation.goBack();
   };
+
+  const handleAddEvent = () => {
+    scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
+      scaleValue.value = withTiming(1, { duration: 100 });
+    });
+    setModalVisible(true);
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -38,7 +57,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
           style={styles.input}
           ref={inputRef}
           placeholder="Title"
-          placeholderTextColor={"#aaa"}
+          placeholderTextColor={"white"}
         ></TextInput>
         <Pressable
           onPress={handleBackButton}
@@ -50,10 +69,11 @@ export default function EditScreen({ navigation }: { navigation: any }) {
               { transform: [{ scale: scaleValue }] },
             ]}
           >
-            <Ionicons name="arrow-back-circle" size={50} color="#25292e" />
+            <Ionicons name="arrow-back-circle" size={50} color="#1e1e1e" />
           </Animated.View>
         </Pressable>
         <Pressable
+          onPress={handleAddEvent}
           style={styles.add_event_button_wrapper}
         >
           <Animated.View
@@ -65,6 +85,11 @@ export default function EditScreen({ navigation }: { navigation: any }) {
             <Text style={styles.new_event_text}>Add Event +</Text>
           </Animated.View>
         </Pressable>
+
+        <EventEditor
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}></EventEditor>
+ 
       </View>
     </TouchableWithoutFeedback>
   );
@@ -78,7 +103,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   text: {
-    color: "#fff",
+    color: "white",
   },
   goBackButtonWrapper: {
     position: "absolute",
@@ -99,8 +124,7 @@ const styles = StyleSheet.create({
     borderColor: "magenta",
     borderWidth: 2,
     borderRadius: 10,
-    paddingHorizontal: 10,
-    color: "magenta",
+    color: "white",
     fontSize: 20,
     backgroundColor: "#1e1e1e",
     fontFamily: "Futura",
@@ -122,7 +146,19 @@ const styles = StyleSheet.create({
   },
   new_event_text: {
     fontFamily: "Futura",
-    color: "#25292e",
+    color: "#1e1e1e",
     fontSize: 20,
+  },
+  timeline: {
+    position: "absolute",
+    top: "50%",
+    left: "10%",
+    right: "10%",
+    height: 5,
+    backgroundColor: "white",
+  },
+  timelineContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

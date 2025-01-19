@@ -66,7 +66,7 @@ export default function HomeScreen({ navigation }: {navigation: any}) {
         },
         new_timeline_text: {
           fontFamily: "Futura",
-          color: "#25292e",
+          color: "#1e1e1e",
           fontSize: 20,
         },
       });
