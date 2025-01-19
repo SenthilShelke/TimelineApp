@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Pressable } from "react-native";
 import EventIcon from "./EventIcon";
 
 type Props = {
@@ -18,11 +18,14 @@ export default function Timeline({ events = [] }: Props) {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
       >
         {sortedEvents.map((event, index) => (
-          <View key={index} style={styles.eventWrapper}>
-            <EventIcon title={event.title} date={event.date} />
-          </View>
+          <Pressable key={index} onPressIn={() => {}}>
+            <View style={styles.eventWrapper}>
+              <EventIcon title={event.title} date={event.date} />
+            </View>
+          </Pressable>
         ))}
       </ScrollView>
     </View>
@@ -35,22 +38,24 @@ const styles = StyleSheet.create({
     top: "50%",
     left: 0,
     right: 0,
-    alignItems: "center",
+    height: 100,
   },
   line: {
-    width: "100%",
-    height: 2,
-    backgroundColor: "white",
     position: "absolute",
     top: "50%",
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: "white",
   },
   scrollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 70,
+    flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 20,
+    minWidth: "100%", 
   },
   eventWrapper: {
     alignItems: "center",
-    marginBottom: 10,
+    marginHorizontal: 15,
   },
 });
