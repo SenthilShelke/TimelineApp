@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, Pressable } from "react-native";
 import EventIcon from "./EventIcon";
 
 type Props = {
-  events: { title: string; date: string }[];
+  events: { title: string; date: string; description: string; }[];
 };
 
 export default function Timeline({ events = [] }: Props) {
@@ -23,7 +23,7 @@ export default function Timeline({ events = [] }: Props) {
         {sortedEvents.map((event, index) => (
           <Pressable key={index} onPressIn={() => {}}>
             <View style={styles.eventWrapper}>
-              <EventIcon title={event.title} date={event.date} />
+              <EventIcon title={event.title} date={event.date} description={event.description}/>
             </View>
           </Pressable>
         ))}

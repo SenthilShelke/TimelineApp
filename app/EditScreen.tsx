@@ -20,7 +20,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [events, setEvents] = useState<{ title: string; date: string }[]>([]);
+  const [events, setEvents] = useState<{ title: string; date: string; description: string }[]>([]);
 
   useEffect(() => {
     const focusTimeout = setTimeout(() => {
@@ -46,7 +46,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
     setModalVisible(true);
   };
 
-  const handleSaveEvent = (newEvent: { title: string; date: string }) => {
+  const handleSaveEvent = (newEvent: { title: string; date: string; description: string }) => {
     setEvents((prevEvents) => [...prevEvents, newEvent]);
     setModalVisible(false);
   };

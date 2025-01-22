@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -16,14 +16,28 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSave: (event: { date: string; title: string }) => void;
+  onSave: (event: { date: string; title: string; description: string }) => void;
+  initialDate?: Date;
+  initialTitle?: string;
+  initialDescription?: string;
 };
 
-export default function EventEditor({ visible, onClose, onSave }: Props) {
+export default function EventEditor({ visible, onClose, onSave, initialDate, initialTitle, initialDescription }: Props) {
   const inputRef = useRef<TextInput>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [title, setTitle] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate ? new Date(initialDate): null);
+  const [title, setTitle] = useState(initialTitle || "");
+  const [description, setDescription] = useState(initialDescription || "");
   const scaleValue = useSharedValue(1);
+
+  useEffect(() => {
+    if(visible) {
+      console.log("Initial Description:", initialDescription);
+      console.log("Initial Title:", initialTitle);
+      setTitle(initialTitle || "");
+      setDescription(initialDescription || "");
+      setSelectedDate(initialDate ? new Date(initialDate) : null);
+    }
+  }, [visible, initialDate, initialTitle, initialDescription]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -36,11 +50,15 @@ export default function EventEditor({ visible, onClose, onSave }: Props) {
       return;
     }
 
-    // Save the event
-    onSave({ title, date: selectedDate.toLocaleDateString() });
+    if (!description.trim()) {
+      Alert.alert("Error", "Please enter a description.");
+      return;
+    }
 
-    // Reset fields after successful save
+    onSave({ title, date: selectedDate.toISOString(), description });
+
     setTitle("");
+    setDescription("");
     setSelectedDate(null);
     onClose();
   };
@@ -93,6 +111,8 @@ export default function EventEditor({ visible, onClose, onSave }: Props) {
                   maxLength={260}
                   textAlign="left"
                   textAlignVertical="top"
+                  value={description}
+                  onChangeText={(text) => setDescription(text)}
                 />
               </View>
             </TouchableWithoutFeedback>

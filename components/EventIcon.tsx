@@ -1,16 +1,59 @@
 import React, { useRef, useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable, Alert } from "react-native";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import EventEditor from "./EventEditor";
 
 type Props = {
   title: string;
   date: string;
+  description: string;
 };
 
-export default function EventIcon({ title, date }: Props) {
+export default function EventIcon({ title, date, description }: Props) {
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [eventDetails, setEventDetails] = useState<{ title: string; date: string; description: string }>({
+    title: title || "", 
+    date: date || "", 
+    description: description || "", 
+  });
+
+  const handleEditEvent = () => {
+    setEventDetails({
+      title: eventDetails.title || title,  
+      date: eventDetails.date || date, 
+      description: eventDetails.description || description,
+    });
+      setModalVisible(true);
+    };
+  
+    const handleSaveEvent = (newEvent: { title: string; date: string; description: string }) => {
+      setEventDetails({
+        ...newEvent,
+        date: new Date(newEvent.date).toISOString(),
+      });
+      setModalVisible(false);
+    };
+
   return (
     <View style={styles.card}>
-      <Text style={styles.dateText}>{date}</Text>
-      <Text style={styles.titleText}>{title}</Text>
+      <Pressable onPress={handleEditEvent}>
+      <Text style={styles.dateText}>{new Date(eventDetails.date).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',  
+    day: 'numeric',
+  })}</Text>
+      <Text style={styles.titleText}>{eventDetails.title}</Text>
+      </Pressable>
+      <EventEditor
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onSave={handleSaveEvent}
+        initialTitle={eventDetails.title}
+        initialDate={new Date (eventDetails.date)}
+        initialDescription={eventDetails.description}
+      />
+      
     </View>
   );
 }
