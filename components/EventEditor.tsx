@@ -24,7 +24,7 @@ type Props = {
 
 export default function EventEditor({ visible, onClose, onSave, initialDate, initialTitle, initialDescription }: Props) {
   const inputRef = useRef<TextInput>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(initialDate ? new Date(initialDate): null);
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate ? new Date(initialDate): new Date());
   const [title, setTitle] = useState(initialTitle || "");
   const [description, setDescription] = useState(initialDescription || "");
   const scaleValue = useSharedValue(1);
@@ -35,7 +35,7 @@ export default function EventEditor({ visible, onClose, onSave, initialDate, ini
       console.log("Initial Title:", initialTitle);
       setTitle(initialTitle || "");
       setDescription(initialDescription || "");
-      setSelectedDate(initialDate ? new Date(initialDate) : null);
+      setSelectedDate(initialDate ? new Date(initialDate) : new Date());
     }
   }, [visible, initialDate, initialTitle, initialDescription]);
 
@@ -45,21 +45,11 @@ export default function EventEditor({ visible, onClose, onSave, initialDate, ini
       return;
     }
 
-    if (!selectedDate) {
-      Alert.alert("Error", "Please select a date.");
-      return;
-    }
-
-    if (!description.trim()) {
-      Alert.alert("Error", "Please enter a description.");
-      return;
-    }
-
     onSave({ title, date: selectedDate.toISOString(), description });
 
     setTitle("");
     setDescription("");
-    setSelectedDate(null);
+    setSelectedDate(new Date());
     onClose();
   };
 

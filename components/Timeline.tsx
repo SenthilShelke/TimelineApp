@@ -3,13 +3,13 @@ import { View, ScrollView, StyleSheet, Pressable } from "react-native";
 import EventIcon from "./EventIcon";
 
 type Props = {
-  events: { title: string; date: string; description: string; }[];
+  events: { title: string; date: string; description: string }[];
 };
 
 export default function Timeline({ events = [] }: Props) {
-  const sortedEvents = [...events].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
+  const sortedEvents = [...events]
+    .map((event) => ({ ...event }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <View style={styles.container}>
@@ -20,10 +20,14 @@ export default function Timeline({ events = [] }: Props) {
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        {sortedEvents.map((event, index) => (
-          <Pressable key={index} onPressIn={() => {}}>
+        {sortedEvents.map((event) => (
+          <Pressable key={`${event.title}-${event.date}`} onPressIn={() => {}}>
             <View style={styles.eventWrapper}>
-              <EventIcon title={event.title} date={event.date} description={event.description}/>
+              <EventIcon
+                title={event.title}
+                date={event.date}
+                description={event.description}
+              />
             </View>
           </Pressable>
         ))}
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    minWidth: "100%", 
+    minWidth: "100%",
   },
   eventWrapper: {
     alignItems: "center",
