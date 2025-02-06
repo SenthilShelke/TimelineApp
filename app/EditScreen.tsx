@@ -46,7 +46,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
     setModalVisible(true);
   };
 
-  const handleSaveEvent = (newEvent: { title: string; date: string; description: string }) => {
+  const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
     setEvents((prevEvents) => [...prevEvents, newEvent]);
     setModalVisible(false);
   };

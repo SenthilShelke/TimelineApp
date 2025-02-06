@@ -7,27 +7,24 @@ type Props = {
   title: string;
   date: string;
   description: string;
+  images?: string[]
 };
 
-export default function EventIcon({ title, date, description }: Props) {
+export default function EventIcon({ title, date, description, images=[]}: Props) {
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [eventDetails, setEventDetails] = useState<{ title: string; date: string; description: string }>({
+  const [eventDetails, setEventDetails] = useState<{ title: string; date: string; description: string; images: string[] }>({
     title: title || "", 
     date: date || "", 
     description: description || "", 
+    images: images
   });
 
   const handleEditEvent = () => {
-    setEventDetails({
-      title: eventDetails.title || title,  
-      date: eventDetails.date || date, 
-      description: eventDetails.description || description,
-    });
       setModalVisible(true);
     };
   
-    const handleSaveEvent = (newEvent: { title: string; date: string; description: string }) => {
+    const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
       setEventDetails({
         ...newEvent,
         date: new Date(newEvent.date).toISOString(),

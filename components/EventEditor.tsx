@@ -9,35 +9,66 @@ import {
   TouchableWithoutFeedback,
   Modal,
   Alert,
+  Image,
+  ScrollView,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSave: (event: { date: string; title: string; description: string }) => void;
+  onSave: (event: { date: string; title: string; description: string; images: string[] }) => void;
   initialDate?: Date;
   initialTitle?: string;
   initialDescription?: string;
+  initialImages?: string[];
 };
 
-export default function EventEditor({ visible, onClose, onSave, initialDate, initialTitle, initialDescription }: Props) {
+export default function EventEditor({
+  visible,
+  onClose,
+  onSave,
+  initialDate,
+  initialTitle,
+  initialDescription,
+  initialImages = [],
+}: Props) {
   const inputRef = useRef<TextInput>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(initialDate ? new Date(initialDate): new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    initialDate ? new Date(initialDate) : new Date()
+  );
   const [title, setTitle] = useState(initialTitle || "");
   const [description, setDescription] = useState(initialDescription || "");
+  const [images, setImages] = useState<string[]>(initialImages);
   const scaleValue = useSharedValue(1);
 
   useEffect(() => {
-    if(visible) {
-      console.log("Initial Description:", initialDescription);
-      console.log("Initial Title:", initialTitle);
+    if (visible) {
       setTitle(initialTitle || "");
       setDescription(initialDescription || "");
       setSelectedDate(initialDate ? new Date(initialDate) : new Date());
+      setImages(initialImages);
     }
-  }, [visible, initialDate, initialTitle, initialDescription]);
+  }, [visible]);
+
+  const pickImage = async () => {
+    if (images.length >= 3) {
+      Alert.alert("Maximum image limit reached");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      setImages([...images, result.assets[0].uri]);
+    }
+  };
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -45,11 +76,12 @@ export default function EventEditor({ visible, onClose, onSave, initialDate, ini
       return;
     }
 
-    onSave({ title, date: selectedDate.toISOString(), description });
+    onSave({ title, date: selectedDate.toISOString(), description, images });
 
     setTitle("");
     setDescription("");
     setSelectedDate(new Date());
+    setImages([]);
     onClose();
   };
 
@@ -104,6 +136,20 @@ export default function EventEditor({ visible, onClose, onSave, initialDate, ini
                   value={description}
                   onChangeText={(text) => setDescription(text)}
                 />
+                <Pressable onPress={pickImage} style={styles.imageButton}>
+                  <Text style={styles.imageButtonText}>Add Image (Max 3)</Text>
+                </Pressable>
+
+                {/* Display Selected Images */}
+                <ScrollView horizontal style={styles.imageContainer}>
+                  {images.map((uri, index) => (
+                    <Image
+                      key={index}
+                      source={{ uri }}
+                      style={styles.imagePreview}
+                    />
+                  ))}
+                </ScrollView>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -197,5 +243,32 @@ const styles = StyleSheet.create({
     color: "#1e1e1e",
     fontSize: 20,
     fontFamily: "Futura",
+  },
+  imageButton: {
+    borderWidth: 2,
+    borderColor: "magenta",
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: "magenta",
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  imageButtonText: {
+    color: "#1e1e1e",
+    fontSize: 16,
+    fontFamily: "Futura",
+  },
+  imageContainer: {
+    flexDirection: "row",
+    marginVertical: 10,
+    marginTop: 60,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "magenta",
   },
 });
