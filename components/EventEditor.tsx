@@ -95,7 +95,7 @@ export default function EventEditor({
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.centeredView}>
           <TouchableWithoutFeedback onPress={onClose}>
-            <View style={styles.dismissArea}></View>
+            <View style={styles.dismissArea} testID="dismiss-area"></View>
           </TouchableWithoutFeedback>
 
           <View style={styles.modalView}>
