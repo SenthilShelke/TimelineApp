@@ -1,6 +1,7 @@
 import React from "react";
-import { render } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import HomeScreen from "../app/HomeScreen";
+import { navigate } from "expo-router/build/global-state/routing";
 
 describe("<HomeScreen />", () => {
   it("renders correctly", () => {
@@ -17,4 +18,20 @@ describe("<HomeScreen />", () => {
     expect(getByText("Title 1")).toBeTruthy();
     expect(getByText("Title 2")).toBeTruthy();
   });
+
+  it("navigates to edit screen when new timeline is pressed", () => {
+    const mockNavigation = {
+      navigate: jest.fn(),
+      goBack: jest.fn(),
+    };
+
+  const { getByText} = render(<HomeScreen navigation={mockNavigation} />);
+  const button = getByText("New Timeline +")
+
+  fireEvent.press(button);
+
+  expect(mockNavigation.navigate).toHaveBeenCalledWith("Edit");
+
+  });
+
 });
