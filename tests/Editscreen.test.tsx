@@ -26,13 +26,29 @@ describe("<EditScreen />", () => {
       goBack: jest.fn(),
     };
 
-    const { getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} />);
+    const { getByPlaceholderText } = render(
+      <EditScreen navigation={mockNavigation} />
+    );
     const titleInput = getByPlaceholderText("Title");
 
     await act(async () => {
-      jest.runAllTimers(); 
+      jest.runAllTimers();
     });
 
-    expect(titleInput).toBeTruthy(); 
+    expect(titleInput).toBeTruthy();
+  });
+
+  it("opens EventEditor when 'New Event +' button is pressed", () => {
+    const { getByText, queryByText } = render(
+      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} />
+    );
+
+    expect(queryByText("Save")).toBeNull();
+
+    const addEventButton = getByText("Add Event +");
+
+    fireEvent.press(addEventButton);
+
+    expect(getByText("Save")).toBeTruthy();
   });
 });
