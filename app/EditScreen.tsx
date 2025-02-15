@@ -70,7 +70,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
               { transform: [{ scale: scaleValue }] },
             ]}
           >
-            <Ionicons name="arrow-back-circle" size={50} color="#1e1e1e" />
+            <Text>&#60;</Text>
           </Animated.View>
         </Pressable>
         <Pressable
