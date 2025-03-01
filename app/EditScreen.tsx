@@ -20,7 +20,7 @@ export default function EditScreen({ navigation }: { navigation: any }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [events, setEvents] = useState<{ title: string; date: string; description: string }[]>([]);
+  const [events, setEvents] = useState<{ title: string; date: string; description: string; images: string[] }[]>([]);
 
   const handleBackButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
