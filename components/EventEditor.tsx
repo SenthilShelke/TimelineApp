@@ -11,6 +11,7 @@ import {
   Alert,
   Image,
   ScrollView,
+  FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
@@ -49,17 +50,12 @@ export default function EventEditor({
       setTitle(initialTitle || "");
       setDescription(initialDescription || "");
       setSelectedDate(initialDate ? new Date(initialDate) : new Date());
-      setImages(initialImages);
+      setImages([...initialImages]);
     }
   }, [visible]);
 
   const pickImage = async () => {
-    if (images.length >= 3) {
-      Alert.alert("Maximum image limit reached");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
+    let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
@@ -76,12 +72,7 @@ export default function EventEditor({
       return;
     }
 
-    onSave({ title, date: selectedDate.toISOString(), description, images });
-
-    setTitle("");
-    setDescription("");
-    setSelectedDate(new Date());
-    setImages([]);
+    onSave({ title, date: selectedDate.toISOString(), description, images: [...images] });
     onClose();
   };
 
@@ -140,16 +131,23 @@ export default function EventEditor({
                   <Text style={styles.imageButtonText}>Add Image (Max 3)</Text>
                 </Pressable>
 
-                {/* Display Selected Images */}
-                <ScrollView horizontal style={styles.imageContainer}>
-                  {images.map((uri, index) => (
+
+                <FlatList
+                  data={images}
+                  keyExtractor={(item, index) => index.toString()}
+                  horizontal
+                  style={
+                    styles.imageContainer
+                  }
+                  renderItem={({ item }) => (
                     <Image
-                      key={index}
-                      source={{ uri }}
-                      style={styles.imagePreview}
+                      source={{ uri: item }}
+                      style={
+                        styles.imagePreview
+                      }
                     />
-                  ))}
-                </ScrollView>
+                  )}
+                />
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -222,7 +220,7 @@ const styles = StyleSheet.create({
   saveButton: {
     borderWidth: 2,
     borderColor: "magenta",
-    borderRadius: 20,
+    borderRadius: 10,
     paddingHorizontal: 30,
     paddingVertical: 5,
     backgroundColor: "magenta",
@@ -241,7 +239,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     color: "#1e1e1e",
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Futura",
   },
   imageButton: {
@@ -262,6 +260,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 10,
     marginTop: 60,
+    marginLeft: 20,
+    alignContent: "center",
   },
   imagePreview: {
     width: 100,
@@ -270,5 +270,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     borderWidth: 2,
     borderColor: "magenta",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

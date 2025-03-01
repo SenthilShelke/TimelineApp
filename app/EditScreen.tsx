@@ -22,16 +22,6 @@ export default function EditScreen({ navigation }: { navigation: any }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [events, setEvents] = useState<{ title: string; date: string; description: string }[]>([]);
 
-  useEffect(() => {
-    const focusTimeout = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
-
-    return () => clearTimeout(focusTimeout);
-  }, []);
-
   const handleBackButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
       scaleValue.value = withTiming(1, { duration: 100 });
@@ -47,9 +37,17 @@ export default function EditScreen({ navigation }: { navigation: any }) {
   };
 
   const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    setEvents((prevEvents) => [
+        ...prevEvents, 
+        {
+            title: newEvent.title,
+            date: newEvent.date,
+            description: newEvent.description,
+            images: [...newEvent.images],
+        }
+    ]);
     setModalVisible(false);
-  };
+};
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

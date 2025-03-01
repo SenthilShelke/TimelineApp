@@ -7,50 +7,64 @@ type Props = {
   title: string;
   date: string;
   description: string;
-  images?: string[]
+  images?: string[];
 };
 
-export default function EventIcon({ title, date, description, images=[]}: Props) {
-
+export default function EventIcon({
+  title,
+  date,
+  description,
+  images = [],
+}: Props) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [eventDetails, setEventDetails] = useState<{ title: string; date: string; description: string; images: string[] }>({
-    title: title || "", 
-    date: date || "", 
-    description: description || "", 
-    images: images
+  const [eventDetails, setEventDetails] = useState<{
+    title: string;
+    date: string;
+    description: string;
+    images?: string[];
+  }>({
+    title: title || "",
+    date: date || "",
+    description: description || "",
+    images,
   });
 
   const handleEditEvent = () => {
-      setModalVisible(true);
-    };
+    setModalVisible(true);
+  };
+
+  const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
+    setEventDetails({
+      title: newEvent.title,
+      date: new Date(newEvent.date).toISOString(),
+      description: newEvent.description,
+      images: [...newEvent.images],
+    });
+    setModalVisible(false);
+  };
   
-    const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
-      setEventDetails({
-        ...newEvent,
-        date: new Date(newEvent.date).toISOString(),
-      });
-      setModalVisible(false);
-    };
 
   return (
     <View style={styles.card}>
       <Pressable onPress={handleEditEvent}>
-      <Text style={styles.dateText}>{new Date(eventDetails.date).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',  
-    day: 'numeric',
-  })}</Text>
-      <Text style={styles.titleText}>{eventDetails.title}</Text>
+        <Text style={styles.dateText}>
+          {new Date(eventDetails.date).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </Text>
+        <Text style={styles.titleText}>{eventDetails.title}</Text>
       </Pressable>
       <EventEditor
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSave={handleSaveEvent}
         initialTitle={eventDetails.title}
-        initialDate={new Date (eventDetails.date)}
+        initialDate={new Date(eventDetails.date)}
         initialDescription={eventDetails.description}
+        initialImages={eventDetails.images}
       />
-      
     </View>
   );
 }
