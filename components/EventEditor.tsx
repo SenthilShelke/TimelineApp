@@ -20,7 +20,12 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onSave: (event: { date: string; title: string; description: string; images: string[] }) => void;
+  onSave: (event: {
+    date: string;
+    title: string;
+    description: string;
+    images: string[];
+  }) => void;
   initialDate?: Date;
   initialTitle?: string;
   initialDescription?: string;
@@ -43,6 +48,9 @@ export default function EventEditor({
   const [title, setTitle] = useState(initialTitle || "");
   const [description, setDescription] = useState(initialDescription || "");
   const [images, setImages] = useState<string[]>(initialImages);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const scaleValue = useSharedValue(1);
 
   useEffect(() => {
@@ -54,12 +62,7 @@ export default function EventEditor({
     }
   }, [visible]);
 
-  const pickImage = async () => {
-    if(images.length >= 3) {
-      Alert.alert("Error", "You can only add up to 3 images.");
-      return;
-    }
-    
+  const pickImage = async (index: number | null = null) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -67,7 +70,17 @@ export default function EventEditor({
     });
 
     if (!result.canceled && result.assets.length > 0) {
-      setImages([...images, result.assets[0].uri]);
+      if (index !== null) {
+        const updatedImages = [...images];
+        updatedImages[index] = result.assets[0].uri;
+        setImages(updatedImages);
+      } else {
+        if (images.length >= 6) {
+          Alert.alert("Error", "You can only add up to 3 images.");
+          return;
+        }
+        setImages([...images, result.assets[0].uri]);
+      }
     }
   };
 
@@ -77,7 +90,12 @@ export default function EventEditor({
       return;
     }
 
-    onSave({ title, date: selectedDate.toISOString(), description, images: [...images] });
+    onSave({
+      title,
+      date: selectedDate.toISOString(),
+      description,
+      images: [...images],
+    });
     onClose();
   };
 
@@ -132,25 +150,25 @@ export default function EventEditor({
                   value={description}
                   onChangeText={(text) => setDescription(text)}
                 />
-                <Pressable onPress={pickImage} style={styles.imageButton}>
+                <Pressable
+                  onPress={() => pickImage(null)}
+                  style={styles.imageButton}
+                >
                   <Text style={styles.imageButtonText}>Add Image (Max 3)</Text>
                 </Pressable>
-
 
                 <FlatList
                   data={images}
                   keyExtractor={(item, index) => index.toString()}
                   horizontal
-                  style={
-                    styles.imageContainer
-                  }
-                  renderItem={({ item }) => (
-                    <Image
-                      source={{ uri: item }}
-                      style={
-                        styles.imagePreview
-                      }
-                    />
+                  style={styles.imageContainer}
+                  renderItem={({ item, index }) => (
+                    <Pressable onPress={() => pickImage(index)}>
+                      <Image
+                        source={{ uri: item }}
+                        style={styles.imagePreview}
+                      />
+                    </Pressable>
                   )}
                 />
               </View>
@@ -265,7 +283,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginVertical: 10,
     marginTop: 60,
-    marginLeft: 20,
     alignContent: "center",
   },
   imagePreview: {
