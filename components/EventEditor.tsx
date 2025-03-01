@@ -55,6 +55,11 @@ export default function EventEditor({
   }, [visible]);
 
   const pickImage = async () => {
+    if(images.length >= 3) {
+      Alert.alert("Error", "You can only add up to 3 images.");
+      return;
+    }
+    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
