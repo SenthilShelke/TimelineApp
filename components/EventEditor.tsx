@@ -14,6 +14,7 @@ import {
   FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { launchCamera, Asset, CameraOptions } from 'react-native-image-picker';
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -51,6 +52,7 @@ export default function EventEditor({
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
+  const [photos, setPhotos] = useState<string[]>(initialImages)
   const scaleValue = useSharedValue(1);
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function EventEditor({
       setDescription(initialDescription || "");
       setSelectedDate(initialDate ? new Date(initialDate) : new Date());
       setImages([...initialImages]);
+      setPhotos([...initialImages]);
     }
   }, [visible]);
 
@@ -80,6 +83,37 @@ export default function EventEditor({
           return;
         }
         setImages([...images, result.assets[0].uri]);
+      }
+    }
+  };
+
+  const takePhoto = async () => {
+
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+  
+    if (status !== "granted") {
+      Alert.alert("Permission Denied", "Camera access is required to take photos.");
+      return;
+    }
+
+  
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+      base64: false,
+    });
+
+  
+    if (!result.canceled && result.assets.length > 0) {
+      const imageUri = result.assets[0].uri;
+  
+      if (imageUri) {
+        if (images.length >= 3) {
+          Alert.alert("Error", "You can only add up to 3 images.");
+          return;
+        }
+        setImages([...images, imageUri]); 
       }
     }
   };
@@ -150,12 +184,24 @@ export default function EventEditor({
                   value={description}
                   onChangeText={(text) => setDescription(text)}
                 />
+
+                <View style={{flexDirection: "row"}}>
+
+
                 <Pressable
                   onPress={() => pickImage(null)}
                   style={styles.imageButton}
                 >
-                  <Text style={styles.imageButtonText}>Add Image (Max 3)</Text>
+                  <Text style={styles.imageButtonText}>Choose Photo</Text>
                 </Pressable>
+
+                <Pressable
+                  onPress={takePhoto}
+                  style={styles.imageButton}
+                >
+                  <Text style={styles.imageButtonText}>Take Photo</Text>
+                </Pressable>
+                </View>
 
                 <FlatList
                   data={images}
@@ -163,7 +209,7 @@ export default function EventEditor({
                   horizontal
                   style={styles.imageContainer}
                   renderItem={({ item, index }) => (
-                    <Pressable onPress={() => pickImage(index)}>
+                    <Pressable onPress={() => pickImage(index)}>  
                       <Image
                         source={{ uri: item }}
                         style={styles.imagePreview}
@@ -235,6 +281,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     fontFamily: "Futura",
+    marginLeft: 6,
   },
   dismissArea: {
     flex: 1,
@@ -273,6 +320,9 @@ const styles = StyleSheet.create({
     backgroundColor: "magenta",
     marginVertical: 10,
     alignItems: "center",
+    width: 180,
+    marginHorizontal: 5,
+
   },
   imageButtonText: {
     color: "#1e1e1e",
