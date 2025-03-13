@@ -13,14 +13,22 @@ import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import EventEditor from "@/components/EventEditor";
 import Timeline from "@/components/Timeline";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
-export default function EditScreen({ navigation }: { navigation: any }) {
+export default function EditScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) {
   const scaleValue = useSharedValue(1);
   const inputRef = useRef<TextInput>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [events, setEvents] = useState<{ title: string; date: string; description: string; images: string[] }[]>([]);
+  const [events, setEvents] = useState(route.params?.events || []);
+  const [timelineTitle, setTimelineTitle] = useState(route.params?.title || []);
 
   const handleBackButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
@@ -36,18 +44,47 @@ export default function EditScreen({ navigation }: { navigation: any }) {
     setModalVisible(true);
   };
 
-  const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
-    setEvents((prevEvents) => [
-        ...prevEvents, 
+  const handleSaveEvent = (newEvent: {
+    title: string;
+    date: string;
+    description: string;
+    images: string[];
+  }) => {
+    setEvents(
+      (
+        prevEvents: {
+          title: string;
+          date: string;
+          description: string;
+          images: string[];
+        }[]
+      ) => [
+        ...prevEvents,
         {
-            title: newEvent.title,
-            date: newEvent.date,
-            description: newEvent.description,
-            images: [...newEvent.images],
-        }
-    ]);
+          title: newEvent.title,
+          date: newEvent.date,
+          description: newEvent.description,
+          images: [...newEvent.images],
+        },
+      ]
+    );
     setModalVisible(false);
-};
+  };
+
+  const handleSaveTimeline = () => {
+    if (!timelineTitle.trim) {
+      alert("Please enter a timeline title.");
+      return;
+    }
+
+    const timelineData = { title: timelineTitle, events };
+
+    navigation.navigate("Home", { savedTimeline: timelineData });
+
+    setTimeout(() => {
+      navigation.popToTop();
+    }, 100);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -57,6 +94,8 @@ export default function EditScreen({ navigation }: { navigation: any }) {
           ref={inputRef}
           placeholder="Title"
           placeholderTextColor={"grey"}
+          value={timelineTitle}
+          onChangeText={setTimelineTitle}
         ></TextInput>
         <Pressable
           onPress={handleBackButton}
@@ -92,6 +131,17 @@ export default function EditScreen({ navigation }: { navigation: any }) {
           onClose={() => setModalVisible(false)}
           onSave={handleSaveEvent}
         ></EventEditor>
+
+        <Pressable
+          onPress={handleSaveTimeline}
+          style={styles.save_button_wrapper}
+        >
+          <Animated.View
+            style={[styles.save_button, { transform: [{ scale: scaleValue }] }]}
+          >
+            <Text style={styles.save_button_text}>Save Timeline</Text>
+          </Animated.View>
+        </Pressable>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -166,5 +216,27 @@ const styles = StyleSheet.create({
   timelineContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  save_button_wrapper: {
+    position: "absolute",
+    bottom: 25,
+    alignSelf: "center",
+    width: "50%",
+  },
+  save_button: {
+    borderWidth: 2,
+    borderColor: "magenta",
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    backgroundColor: "magenta",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  save_button_text: { 
+    color: "#1e1e1e", 
+    fontSize: 20, 
+    fontFamily: "Futura",
+   
   },
 });

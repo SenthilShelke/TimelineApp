@@ -1,56 +1,61 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-type Props = {
-  title: string;
-  onPress?: () => void;
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+
+type RootStackParamList = {
+  Home: undefined;
+  Edit: { title: string; events: any[] };
 };
 
-export default function TimelineView({ title, onPress }: Props) {
-  const scaleValue = useSharedValue(1);
+type NavigationProp = StackNavigationProp<RootStackParamList, "Edit">;
+type Props = {
+  title: string;
+  events: any[];
+};
 
-  onPress = () => {
-    alert("You pressed a button");
+export default function TimelineView({ title, events }: Props) {
+  const scaleValue = useSharedValue(1);
+  const navigation = useNavigation<NavigationProp>();
+
+  const handleEdit = () => {
+    navigation.navigate("Edit", { title, events });
   };
 
   const animateButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
       scaleValue.value = withTiming(1, { duration: 100 });
     });
-    onPress();
   };
 
   return (
-    <View>
-      <Pressable onPress={animateButton}>
-        <Animated.View
-          style={[
-            styles.view_timeline_button,
-            { transform: [{ scale: scaleValue }] },
-          ]}
-        >
-          <Text style={styles.view_timeline_text}>{title}</Text>
-        </Animated.View>
+    <View style={styles.timelineContainer}>
+      <Pressable onPress={handleEdit} style={styles.timelineButton}>
+        <Text style={styles.timelineText}>{title}</Text>
+      </Pressable>
+      <Pressable onPress={handleEdit} style={styles.editButton}>
+        <Ionicons name="pencil" size={20} color="white" />
       </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  view_timeline_button: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+  timelineContainer: { flexDirection: "row", alignItems: "center", margin: 10 },
+  timelineButton: {
+    flex: 1,
+    padding: 15,
     backgroundColor: "#1e1e1e",
-    margin: 10,
-    justifyContent: "center",
-    width: 350,
+    borderRadius: 10,
   },
-  view_timeline_text: {
-    color: "magenta",
-    fontSize: 20,
-    fontFamily: "Futura",
+  editButton: { 
+    marginLeft: 10, 
+    padding: 10 
+  },
+  timelineText: { 
+    color: "magenta", 
+    fontSize: 20 
   },
 });
