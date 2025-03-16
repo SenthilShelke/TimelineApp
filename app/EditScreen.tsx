@@ -78,13 +78,11 @@ export default function EditScreen({
     }
 
     const timelineData = { title: timelineTitle, events };
+    navigation.goBack();
 
     navigation.navigate("Home", { savedTimeline: timelineData });
-
-    setTimeout(() => {
-      navigation.popToTop();
-    }, 100);
-  };
+    
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

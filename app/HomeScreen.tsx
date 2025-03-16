@@ -5,41 +5,12 @@ import TimelineView from "../components/TimelineView";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function HomeScreen({
-  navigation,
-  route,
+  navigation, route
 }: {
-  navigation: any;
-  route: any;
+  navigation: any; route: any;
 }) {
   const scaleValue = useSharedValue(1);
-  const [timelines, setTimelines] = useState<
-    { title: string; events: any[] }[]
-  >([]);
-  const [forceRender, setForceRender] = useState(0); 
-
-  useEffect(() => {
-    if (route.params?.savedTimeline) {
-      setTimelines((prevTimelines) => {
-        const updatedTimelines = [...prevTimelines];
-
-        const index = updatedTimelines.findIndex(
-          (t) => t.title === route.params.savedTimeline.title
-        );
-
-        if (index !== -1) {
-          updatedTimelines[index] = route.params.savedTimeline;
-        } else {
-          updatedTimelines.push(route.params.savedTimeline);
-        }
-
-        console.log(" Number of Timelines:", updatedTimelines.length);
-
-        return updatedTimelines;
-      });
-
-      setForceRender((prev) => prev + 1);
-    }
-  }, [route.params?.savedTimeline]);
+  const [timelines, setTimelines] = useState<{ title: string; events: any[] }[]>([]);
 
   const animateButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
@@ -48,31 +19,41 @@ export default function HomeScreen({
     navigation.navigate("Edit");
   };
 
+  useEffect(() => {
+    if (route.params?.savedTimeline) {
+      setTimelines((prevTimelines) => {
+        const updatedTimelines = [...prevTimelines];
+        const index = updatedTimelines.findIndex(t => t.title === route.params.savedTimeline.title);
+
+        if (index !== -1) {
+          updatedTimelines[index] = route.params.savedTimeline;
+        } else {
+          updatedTimelines.push(route.params.savedTimeline);
+        }
+
+        return updatedTimelines;
+      });
+
+      setTimeout(() => {
+        navigation.setParams({ savedTimeline: null });
+      }, 100);
+    }
+  }, [route.params?.savedTimeline]);
+
   return (
-    <View style={styles.container} key={forceRender}>
+    <View style={styles.container}>
       <Text style={styles.title}>Your Timelines</Text>
       <ScrollView>
         {timelines.length > 0 ? (
           timelines.map((timeline, index) => (
-            <TimelineView
-              key={index}
-              title={timeline.title}
-              events={timeline.events}
-            />
+            <TimelineView key={index} title={timeline.title} events={timeline.events} />
           ))
         ) : (
-          <Text style={styles.noTimelinesText}>
-            No timelines yet. Create one!
-          </Text>
+          <Text style={styles.noTimelinesText}>No timelines yet. Create one!</Text>
         )}
       </ScrollView>
-      <Pressable
-        onPress={() => navigation.navigate("Edit")}
-        style={styles.add_timeline_button_wrapper}
-      >
-        <View style={styles.add_timeline_button}>
-          <Text style={styles.new_timeline_text}>New Timeline +</Text>
-        </View>
+      <Pressable onPress={() => navigation.navigate("Edit")} style={styles.add_timeline_button}>
+        <Text style={styles.new_timeline_text}>New Timeline +</Text>
       </Pressable>
     </View>
   );
@@ -92,13 +73,6 @@ const styles = StyleSheet.create({
     fontFamily: "Futura",
     marginBottom: 20,
   },
-  add_timeline_button_wrapper: {
-    position: "absolute",
-    bottom: 30,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
   add_timeline_button: {
     borderWidth: 2,
     borderColor: "magenta",
@@ -106,6 +80,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 5,
     backgroundColor: "magenta",
+    bottom: 30,
   },
   new_timeline_text: {
     fontFamily: "Futura",
