@@ -4,6 +4,9 @@ import EditScreen from "../app/EditScreen";
 import { navigate } from "expo-router/build/global-state/routing";
 import { Keyboard } from "react-native";
 
+const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+const mockRoute = { params: { events: [], title: "My Timeline" } };
+
 jest.useFakeTimers();
 
 describe("<EditScreen />", () => {
@@ -13,7 +16,7 @@ describe("<EditScreen />", () => {
       goBack: jest.fn(),
     };
 
-    const { getByText } = render(<EditScreen navigation={mockNavigation} />);
+    const { getByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
     const button = getByText("<");
 
     fireEvent.press(button);
@@ -28,7 +31,7 @@ describe("<EditScreen />", () => {
     };
 
     const { getByPlaceholderText } = render(
-      <EditScreen navigation={mockNavigation} />
+      <EditScreen navigation={mockNavigation} route={mockRoute}/>
     );
     const titleInput = getByPlaceholderText("Title");
 
@@ -41,7 +44,7 @@ describe("<EditScreen />", () => {
 
   it("opens EventEditor when 'New Event +' button is pressed", () => {
     const { getByText, queryByText } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} />
+      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
     );
 
     expect(queryByText("Save")).toBeNull();
@@ -55,7 +58,7 @@ describe("<EditScreen />", () => {
 
   it("closes the EventEditor modal when clicking outside of it", () => {
     const { getByText, queryByPlaceholderText, getByTestId } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} />
+      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
     );
   
     const addEventButton = getByText("Add Event +");

@@ -3,6 +3,9 @@ import { act, render, fireEvent } from "@testing-library/react-native";
 import EditScreen from "../app/EditScreen";
 import { navigate } from "expo-router/build/global-state/routing";
 
+const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
+const mockRoute = { params: { events: [], title: "My Timeline" } };
+
 jest.useFakeTimers();
 
 describe("<EventEditor />", () => {
@@ -10,7 +13,7 @@ describe("<EventEditor />", () => {
 
   it("text input works correctly", () => {
     const { getByText, getByPlaceholderText } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} />
+      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
     );
   
     const addEventButton = getByText("Add Event +");
@@ -28,7 +31,7 @@ describe("<EventEditor />", () => {
 
   it("saving events works properly", () => {
     const { getByText, getByPlaceholderText } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} />
+      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
     );
   
     const addEventButton = getByText("Add Event +");
