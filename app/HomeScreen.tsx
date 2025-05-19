@@ -43,7 +43,7 @@ export default function HomeScreen({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Timelines</Text>
-      <ScrollView>
+      <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (
           timelines.map((timeline, index) => (
             <TimelineView key={index} title={timeline.title} events={timeline.events} />
