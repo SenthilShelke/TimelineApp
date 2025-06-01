@@ -14,14 +14,16 @@ import {
   FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { launchCamera, Asset, CameraOptions } from 'react-native-image-picker';
+import { launchCamera, Asset, CameraOptions } from "react-native-image-picker";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   onSave: (event: {
+    id: string;
     date: string;
     title: string;
     description: string;
@@ -31,12 +33,14 @@ type Props = {
   initialTitle?: string;
   initialDescription?: string;
   initialImages?: string[];
+  onDelete?: () => void;
 };
 
 export default function EventEditor({
   visible,
   onClose,
   onSave,
+  onDelete,
   initialDate,
   initialTitle,
   initialDescription,
@@ -52,7 +56,7 @@ export default function EventEditor({
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
-  const [photos, setPhotos] = useState<string[]>(initialImages)
+  const [photos, setPhotos] = useState<string[]>(initialImages);
   const scaleValue = useSharedValue(1);
 
   useEffect(() => {
@@ -88,15 +92,16 @@ export default function EventEditor({
   };
 
   const takePhoto = async () => {
-
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-  
+
     if (status !== "granted") {
-      Alert.alert("Permission Denied", "Camera access is required to take photos.");
+      Alert.alert(
+        "Permission Denied",
+        "Camera access is required to take photos."
+      );
       return;
     }
 
-  
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -104,16 +109,15 @@ export default function EventEditor({
       base64: false,
     });
 
-  
     if (!result.canceled && result.assets.length > 0) {
       const imageUri = result.assets[0].uri;
-  
+
       if (imageUri) {
         if (images.length >= 3) {
           Alert.alert("Error", "You can only add up to 3 images.");
           return;
         }
-        setImages([...images, imageUri]); 
+        setImages([...images, imageUri]);
       }
     }
   };
@@ -125,11 +129,13 @@ export default function EventEditor({
     }
 
     onSave({
+      id: uuidv4(),
       title,
       date: selectedDate.toISOString(),
       description,
       images: [...images],
     });
+
     onClose();
   };
 
@@ -185,22 +191,17 @@ export default function EventEditor({
                   onChangeText={(text) => setDescription(text)}
                 />
 
-                <View style={{flexDirection: "row"}}>
+                <View style={{ flexDirection: "row" }}>
+                  <Pressable
+                    onPress={() => pickImage(null)}
+                    style={styles.imageButton}
+                  >
+                    <Text style={styles.imageButtonText}>Choose Photo</Text>
+                  </Pressable>
 
-
-                <Pressable
-                  onPress={() => pickImage(null)}
-                  style={styles.imageButton}
-                >
-                  <Text style={styles.imageButtonText}>Choose Photo</Text>
-                </Pressable>
-
-                <Pressable
-                  onPress={takePhoto}
-                  style={styles.imageButton}
-                >
-                  <Text style={styles.imageButtonText}>Take Photo</Text>
-                </Pressable>
+                  <Pressable onPress={takePhoto} style={styles.imageButton}>
+                    <Text style={styles.imageButtonText}>Take Photo</Text>
+                  </Pressable>
                 </View>
 
                 <FlatList
@@ -209,7 +210,7 @@ export default function EventEditor({
                   horizontal
                   style={styles.imageContainer}
                   renderItem={({ item, index }) => (
-                    <Pressable onPress={() => pickImage(index)}>  
+                    <Pressable onPress={() => pickImage(index)}>
                       <Image
                         source={{ uri: item }}
                         style={styles.imagePreview}
@@ -229,6 +230,11 @@ export default function EventEditor({
               ]}
             >
               <Text style={styles.saveButtonText}>Save</Text>
+            </Animated.View>
+          </Pressable>
+          <Pressable onPress={onDelete} style={styles.deleteButtonWrapper}>
+            <Animated.View style={[styles.deleteButton]}>
+              <Text style={styles.deleteButtonText}>Delete</Text>
             </Animated.View>
           </Pressable>
         </View>
@@ -322,7 +328,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: 180,
     marginHorizontal: 5,
-
   },
   imageButtonText: {
     color: "#1e1e1e",
@@ -344,5 +349,29 @@ const styles = StyleSheet.create({
     borderColor: "magenta",
     alignItems: "center",
     justifyContent: "center",
+  },
+  deleteButtonWrapper: {
+    position: "absolute",
+    bottom: 60,
+    left: 0,
+    right: 0,
+    alignSelf: "center",
+    alignItems: "center",
+    width: "50%",
+    marginLeft: "25%",
+  },
+  deleteButton: {
+    borderWidth: 2,
+    borderColor: "red",
+    borderRadius: 10,
+    paddingHorizontal: 30,
+    paddingVertical: 5,
+    backgroundColor: "red",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#1e1e1e",
+    fontSize: 16,
+    fontFamily: "Futura",
   },
 });

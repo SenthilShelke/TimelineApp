@@ -14,7 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import EventEditor from "@/components/EventEditor";
 import Timeline from "@/components/Timeline";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export default function EditScreen({
   navigation,
@@ -28,8 +28,13 @@ export default function EditScreen({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [events, setEvents] = useState(route.params?.events || []);
-  const [timelineTitle, setTimelineTitle] = useState(route.params?.title || []);
+  const [events, setEvents] = useState(
+    (route.params?.events || []).map((event: any) => ({
+      ...event,
+      id: event.id ?? uuidv4(),
+    }))
+  );
+  const [timelineTitle, setTimelineTitle] = useState(route.params?.title || "");
 
   const handleBackButton = () => {
     scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
@@ -54,6 +59,7 @@ export default function EditScreen({
     setEvents(
       (
         prevEvents: {
+          id: string;
           title: string;
           date: string;
           description: string;
@@ -62,39 +68,72 @@ export default function EditScreen({
       ) => [
         ...prevEvents,
         {
-          title: newEvent.title,
-          date: newEvent.date,
-          description: newEvent.description,
-          images: [...newEvent.images],
+          ...newEvent,
+          id: uuidv4(),
         },
       ]
     );
     setModalVisible(false);
   };
 
-  const handleUpdateEvent = (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => {
-  setEvents((prevEvents: { title: string; date: string; description: string; images: string[] }[]) => {
-    const updatedEvents = [...prevEvents];
-    updatedEvents[index] = updatedEvent;
-    return updatedEvents;
-  });
-};
-
-  const handleSaveTimeline = () => {
-  if (!timelineTitle.trim()) {
-    alert("Please enter a timeline title.");
-    return;
-  }
-
-  const timelineData = {
-    id: route.params?.id ?? uuidv4(),  
-    title: timelineTitle,
-    events,
+  const handleUpdateEvent = (
+    index: number,
+    updatedEvent: {
+      title: string;
+      date: string;
+      description: string;
+      images: string[];
+    }
+  ) => {
+    setEvents(
+      (
+        prevEvents: {
+          id: string;
+          title: string;
+          date: string;
+          description: string;
+          images: string[];
+        }[]
+      ) => {
+        const updatedEvents = [...prevEvents];
+        updatedEvents[index] = {
+          ...updatedEvents[index], // preserves id
+          ...updatedEvent,
+        };
+        return updatedEvents;
+      }
+    );
   };
 
-  navigation.goBack();
-  navigation.navigate("Home", { savedTimeline: timelineData });
-};
+  const handleSaveTimeline = () => {
+    if (!timelineTitle.trim()) {
+      alert("Please enter a timeline title.");
+      return;
+    }
+
+    const timelineData = {
+      id: route.params?.id ?? uuidv4(),
+      title: timelineTitle,
+      events,
+    };
+
+    navigation.goBack();
+    navigation.navigate("Home", { savedTimeline: timelineData });
+  };
+
+  const handleDeleteEvent = (id: string) => {
+    setEvents(
+      (
+        prevEvents: {
+          id: string;
+          title: string;
+          date: string;
+          description: string;
+          images: string[];
+        }[]
+      ) => prevEvents.filter((event) => event.id !== id)
+    );
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -134,7 +173,11 @@ export default function EditScreen({
           </Animated.View>
         </Pressable>
 
-        <Timeline events={events} onUpdateEvent={handleUpdateEvent}></Timeline>
+        <Timeline
+          events={events}
+          onUpdateEvent={handleUpdateEvent}
+          onDeleteEvent={handleDeleteEvent}
+        ></Timeline>
 
         <EventEditor
           visible={modalVisible}
@@ -244,10 +287,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 15,
   },
-  save_button_text: { 
-    color: "#1e1e1e", 
-    fontSize: 20, 
+  save_button_text: {
+    color: "#1e1e1e",
+    fontSize: 20,
     fontFamily: "Futura",
-   
   },
 });

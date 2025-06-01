@@ -5,18 +5,30 @@ import TimelineView from "../components/TimelineView";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function HomeScreen({
-  navigation, route
+  navigation,
+  route,
 }: {
-  navigation: any; route: any;
+  navigation: any;
+  route: any;
 }) {
   const scaleValue = useSharedValue(1);
-  const [timelines, setTimelines] = useState<{ id: string; title: string; events: any[] }[]>([]);
+  const [timelines, setTimelines] = useState<
+    { id: string; title: string; events: any[] }[]
+  >([]);
+
+  const handleDeleteTimeline = (id: string) => {
+    setTimelines((prevTimelines) =>
+      prevTimelines.filter((timeline) => timeline.id !== id)
+    );
+  };
 
   useEffect(() => {
     if (route.params?.savedTimeline) {
       setTimelines((prevTimelines) => {
         const updatedTimelines = [...prevTimelines];
-        const index = updatedTimelines.findIndex(t => t.id === route.params.savedTimeline.id);
+        const index = updatedTimelines.findIndex(
+          (t) => t.id === route.params.savedTimeline.id
+        );
 
         if (index !== -1) {
           updatedTimelines[index] = route.params.savedTimeline;
@@ -39,13 +51,24 @@ export default function HomeScreen({
       <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (
           timelines.map((timeline, index) => (
-            <TimelineView key={index} id={timeline.id} title={timeline.title} events={timeline.events} />
+            <TimelineView
+              key={index}
+              id={timeline.id}
+              title={timeline.title}
+              events={timeline.events}
+              onDelete={(id) => handleDeleteTimeline(id)}
+            />
           ))
         ) : (
-          <Text style={styles.noTimelinesText}>No timelines yet. Create one!</Text>
+          <Text style={styles.noTimelinesText}>
+            No timelines yet. Create one!
+          </Text>
         )}
       </ScrollView>
-      <Pressable onPress={() => navigation.navigate("Edit")} style={styles.add_timeline_button}>
+      <Pressable
+        onPress={() => navigation.navigate("Edit")}
+        style={styles.add_timeline_button}
+      >
         <Text style={styles.new_timeline_text}>New Timeline +</Text>
       </Pressable>
     </View>

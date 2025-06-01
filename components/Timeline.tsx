@@ -3,18 +3,27 @@ import { View, ScrollView, StyleSheet, Pressable } from "react-native";
 import EventIcon from "./EventIcon";
 
 type Props = {
-  events: { title: string; date: string; description: string; images: string[]}[];
-  onUpdateEvent: (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => void;
+  events: {
+    id: string;
+    title: string;
+    date: string;
+    description: string;
+    images: string[];
+  }[];
+  onUpdateEvent: (index: number, updatedEvent: {
+    id: string;
+    title: string;
+    date: string;
+    description: string;
+    images: string[];
+  }) => void;
+  onDeleteEvent: (id: string) => void;
 };
 
-export default function Timeline({ events = [], onUpdateEvent }: Props) {
+export default function Timeline({ events = [], onUpdateEvent, onDeleteEvent }: Props) {
   const sortedEvents = [...events]
     .map((event) => ({ ...event }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    const handleUpdateEvent = (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => {
-  events[index] = updatedEvent;
-};
 
   return (
     <View style={styles.container}>
@@ -26,14 +35,16 @@ export default function Timeline({ events = [], onUpdateEvent }: Props) {
         keyboardShouldPersistTaps="handled"
       >
         {sortedEvents.map((event, index) => (
-          <Pressable key={`${event.title}-${event.date}`} onPressIn={() => {}}>
+          <Pressable key={event.id} onPressIn={() => {}}>
             <View style={styles.eventWrapper}>
               <EventIcon
+                id={event.id}
                 title={event.title}
                 date={event.date}
                 description={event.description}
                 images={event.images}
                 onUpdateEvent={(updatedEvent) => onUpdateEvent(index, updatedEvent)}
+                onDeleteEvent={() => onDeleteEvent(event.id)}
               />
             </View>
           </Pressable>
