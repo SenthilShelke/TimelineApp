@@ -8,6 +8,12 @@ type Props = {
   date: string;
   description: string;
   images?: string[];
+  onUpdateEvent: (updatedEvent: {
+    title: string;
+    date: string;
+    description: string;
+    images: string[];
+  }) => void;
 };
 
 export default function EventIcon({
@@ -15,6 +21,7 @@ export default function EventIcon({
   date,
   description,
   images = [],
+  onUpdateEvent,
 }: Props) {
   const [modalVisible, setModalVisible] = useState(false);
   const [eventDetails, setEventDetails] = useState<{
@@ -34,14 +41,17 @@ export default function EventIcon({
   };
 
   const handleSaveEvent = (newEvent: { title: string; date: string; description: string; images: string[] }) => {
-    setEventDetails({
-      title: newEvent.title,
-      date: new Date(newEvent.date).toISOString(),
-      description: newEvent.description,
-      images: [...newEvent.images],
-    });
-    setModalVisible(false);
+  const updatedEvent = {
+    title: newEvent.title,
+    date: new Date(newEvent.date).toISOString(),
+    description: newEvent.description,
+    images: [...newEvent.images],
   };
+  setEventDetails(updatedEvent);
+  setModalVisible(false);
+
+  onUpdateEvent(updatedEvent);
+};
   
 
   return (

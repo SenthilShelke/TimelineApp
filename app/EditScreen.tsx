@@ -72,6 +72,14 @@ export default function EditScreen({
     setModalVisible(false);
   };
 
+  const handleUpdateEvent = (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => {
+  setEvents((prevEvents: { title: string; date: string; description: string; images: string[] }[]) => {
+    const updatedEvents = [...prevEvents];
+    updatedEvents[index] = updatedEvent;
+    return updatedEvents;
+  });
+};
+
   const handleSaveTimeline = () => {
   if (!timelineTitle.trim()) {
     alert("Please enter a timeline title.");
@@ -126,7 +134,7 @@ export default function EditScreen({
           </Animated.View>
         </Pressable>
 
-        <Timeline events={events}></Timeline>
+        <Timeline events={events} onUpdateEvent={handleUpdateEvent}></Timeline>
 
         <EventEditor
           visible={modalVisible}

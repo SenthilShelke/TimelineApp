@@ -4,12 +4,17 @@ import EventIcon from "./EventIcon";
 
 type Props = {
   events: { title: string; date: string; description: string; images: string[]}[];
+  onUpdateEvent: (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => void;
 };
 
-export default function Timeline({ events = [] }: Props) {
+export default function Timeline({ events = [], onUpdateEvent }: Props) {
   const sortedEvents = [...events]
     .map((event) => ({ ...event }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const handleUpdateEvent = (index: number, updatedEvent: { title: string; date: string; description: string; images: string[] }) => {
+  events[index] = updatedEvent;
+};
 
   return (
     <View style={styles.container}>
@@ -20,7 +25,7 @@ export default function Timeline({ events = [] }: Props) {
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
       >
-        {sortedEvents.map((event) => (
+        {sortedEvents.map((event, index) => (
           <Pressable key={`${event.title}-${event.date}`} onPressIn={() => {}}>
             <View style={styles.eventWrapper}>
               <EventIcon
@@ -28,6 +33,7 @@ export default function Timeline({ events = [] }: Props) {
                 date={event.date}
                 description={event.description}
                 images={event.images}
+                onUpdateEvent={(updatedEvent) => onUpdateEvent(index, updatedEvent)}
               />
             </View>
           </Pressable>
