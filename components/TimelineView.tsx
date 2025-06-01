@@ -6,19 +6,20 @@ import { Feather } from "@expo/vector-icons";
 
 type RootStackParamList = {
   Home: undefined;
-  Edit: { title: string; events: { title: string; date: string; description: string; images: string[] }[] };
+  Edit: { id: string; title: string; events: { title: string; date: string; description: string; images: string[] }[] };
 };
 
 type Props = {
+  id: string;
   title: string;
   events: { title: string; date: string; description: string; images: string[] }[];
 };
 
-export default function TimelineView({ title, events }: Props) {
+export default function TimelineView({ id, title, events }: Props) {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList, "Home">>();
 
   const handleEdit = () => {
-    navigation.navigate("Edit", { title, events });
+    navigation.navigate("Edit", { id, title, events });
   };
 
   return (

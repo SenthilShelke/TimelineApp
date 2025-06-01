@@ -7,73 +7,36 @@ import { Keyboard } from "react-native";
 const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 const mockRoute = { params: { events: [], title: "My Timeline" } };
 
-jest.useFakeTimers();
-
 describe("<EditScreen />", () => {
   it("navigates to the previous screen when the back button is pressed", () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-
-    const { getByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
+    const { getByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
     const button = getByText("<");
-
     fireEvent.press(button);
-
     expect(mockNavigation.goBack).toHaveBeenCalled();
   });
 
-  it("automatically focuses the title TextInput when the screen loads", async () => {
-    const mockNavigation = {
-      navigate: jest.fn(),
-      goBack: jest.fn(),
-    };
-
-    const { getByPlaceholderText } = render(
-      <EditScreen navigation={mockNavigation} route={mockRoute}/>
-    );
+  it("updates the title TextInput value when typing", () => {
+    const { getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
     const titleInput = getByPlaceholderText("Title");
-
-    await act(async () => {
-      jest.runAllTimers();
-    });
-
-    expect(titleInput).toBeTruthy();
+    fireEvent.changeText(titleInput, "My New Timeline");
+    expect(titleInput.props.value).toBe("My New Timeline");
   });
 
   it("opens EventEditor when 'New Event +' button is pressed", () => {
-    const { getByText, queryByText } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
-    );
-
+    const { getByText, queryByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
     expect(queryByText("Save")).toBeNull();
-
     const addEventButton = getByText("Add Event +");
-
     fireEvent.press(addEventButton);
-
     expect(getByText("Save")).toBeTruthy();
   });
 
   it("closes the EventEditor modal when clicking outside of it", () => {
-    const { getByText, queryByPlaceholderText, getByTestId } = render(
-      <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
-    );
-  
+    const { getByText, getByPlaceholderText, queryByPlaceholderText, getByTestId } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
     const addEventButton = getByText("Add Event +");
     fireEvent.press(addEventButton);
-  
-    expect(queryByPlaceholderText("Event Title")).toBeTruthy();
-  
+    expect(getByPlaceholderText("Event Title")).toBeTruthy();
     const dismissArea = getByTestId("dismiss-area");
     fireEvent.press(dismissArea);
-  
     expect(queryByPlaceholderText("Event Title")).toBeNull();
   });
-   
-
-  
-
-  
 });

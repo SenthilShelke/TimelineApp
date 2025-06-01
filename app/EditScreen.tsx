@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import EventEditor from "@/components/EventEditor";
 import Timeline from "@/components/Timeline";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function EditScreen({
   navigation,
@@ -72,17 +73,20 @@ export default function EditScreen({
   };
 
   const handleSaveTimeline = () => {
-    if (!timelineTitle.trim) {
-      alert("Please enter a timeline title.");
-      return;
-    }
-
-    const timelineData = { title: timelineTitle, events };
-    navigation.goBack();
-
-    navigation.navigate("Home", { savedTimeline: timelineData });
-    
+  if (!timelineTitle.trim()) {
+    alert("Please enter a timeline title.");
+    return;
   }
+
+  const timelineData = {
+    id: route.params?.id ?? uuidv4(),  
+    title: timelineTitle,
+    events,
+  };
+
+  navigation.goBack();
+  navigation.navigate("Home", { savedTimeline: timelineData });
+};
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -105,7 +109,7 @@ export default function EditScreen({
               { transform: [{ scale: scaleValue }] },
             ]}
           >
-            <Text>&#60;</Text>
+            <Ionicons name="arrow-back-circle" size={30} color="#25292e" />
           </Animated.View>
         </Pressable>
         <Pressable
@@ -161,7 +165,8 @@ const styles = StyleSheet.create({
     left: 10,
   },
   goBackButton: {
-    padding: 10,
+    marginTop: 4,
+    padding: 7.5,
     backgroundColor: "magenta",
     borderRadius: 10,
   },

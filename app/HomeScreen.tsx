@@ -10,20 +10,13 @@ export default function HomeScreen({
   navigation: any; route: any;
 }) {
   const scaleValue = useSharedValue(1);
-  const [timelines, setTimelines] = useState<{ title: string; events: any[] }[]>([]);
-
-  const animateButton = () => {
-    scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
-      scaleValue.value = withTiming(1, { duration: 100 });
-    });
-    navigation.navigate("Edit");
-  };
+  const [timelines, setTimelines] = useState<{ id: string; title: string; events: any[] }[]>([]);
 
   useEffect(() => {
     if (route.params?.savedTimeline) {
       setTimelines((prevTimelines) => {
         const updatedTimelines = [...prevTimelines];
-        const index = updatedTimelines.findIndex(t => t.title === route.params.savedTimeline.title);
+        const index = updatedTimelines.findIndex(t => t.id === route.params.savedTimeline.id);
 
         if (index !== -1) {
           updatedTimelines[index] = route.params.savedTimeline;
@@ -46,7 +39,7 @@ export default function HomeScreen({
       <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (
           timelines.map((timeline, index) => (
-            <TimelineView key={index} title={timeline.title} events={timeline.events} />
+            <TimelineView key={index} id={timeline.id} title={timeline.title} events={timeline.events} />
           ))
         ) : (
           <Text style={styles.noTimelinesText}>No timelines yet. Create one!</Text>

@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "./HomeScreen";
 import EditScreen from "./EditScreen";
+import 'react-native-get-random-values';
 
 const Stack = createStackNavigator();
 

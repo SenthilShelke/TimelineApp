@@ -10,28 +10,18 @@ const mockRoute = { params: { events: [], title: "My Timeline" } };
 describe("<EventIcon />", () => {
 
     it("opens the EventEditor with correct initial data when an event is clicked", () => {
-        const { getByText, getByPlaceholderText } = render(
-          <EditScreen navigation={{ navigate: jest.fn(), goBack: jest.fn() }} route={mockRoute}/>
-        );
-    
+        const { getByText, getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
         const addEventButton = getByText("Add Event +");
-        fireEvent.press(addEventButton);
-    
+        fireEvent.press(addEventButton);    
         const titleInput = getByPlaceholderText("Event Title");
-        const descriptionInput = getByPlaceholderText("Description(optional)");
-    
+        const descriptionInput = getByPlaceholderText("Description(optional)");   
         fireEvent.changeText(titleInput, "My Event");
         fireEvent.changeText(descriptionInput, "This is a test description.");
-        fireEvent.press(getByText("Save"));
-    
+        fireEvent.press(getByText("Save"));   
         expect(getByText("My Event")).toBeTruthy();
-
-        fireEvent.press(getByText("My Event"));
-    
+        fireEvent.press(getByText("My Event"));   
         expect(getByPlaceholderText("Event Title").props.value).toBe("My Event");
-        expect(getByPlaceholderText("Description(optional)").props.value).toBe(
-          "This is a test description."
-        );
+        expect(getByPlaceholderText("Description(optional)").props.value).toBe("This is a test description.");
     
         const formattedDate = new Date().toLocaleDateString(undefined, {
           year: "numeric",
