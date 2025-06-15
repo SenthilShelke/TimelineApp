@@ -44,7 +44,9 @@ export default function Timeline({ events = [], onUpdateEvent, onDeleteEvent }: 
                 description={event.description}
                 images={event.images}
                 onUpdateEvent={(updatedEvent) => onUpdateEvent(index, updatedEvent)}
-                onDeleteEvent={() => onDeleteEvent(event.id)}
+                onDeleteEvent={() => 
+        
+                      onDeleteEvent(event.id)}
               />
             </View>
           </Pressable>

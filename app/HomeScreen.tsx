@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import TimelineView from "../components/TimelineView";
+import TimelineButton from "../components/TimelineButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 export default function HomeScreen({
@@ -51,7 +51,7 @@ export default function HomeScreen({
       <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (
           timelines.map((timeline, index) => (
-            <TimelineView
+            <TimelineButton
               key={index}
               id={timeline.id}
               title={timeline.title}
@@ -66,7 +66,10 @@ export default function HomeScreen({
         )}
       </ScrollView>
       <Pressable
-        onPress={() => navigation.navigate("Edit")}
+        onPress={() => 
+          navigation.navigate("Edit")
+          
+        }
         style={styles.add_timeline_button}
       >
         <Text style={styles.new_timeline_text}>New Timeline +</Text>

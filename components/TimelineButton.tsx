@@ -17,6 +17,17 @@ type RootStackParamList = {
       images: string[];
     }[];
   };
+  View: {
+    id: string;
+    title: string;
+    events: {
+      id: string;
+      title: string;
+      date: string;
+      description: string;
+      images: string[];
+    }[];
+  };
 };
 
 type Props = {
@@ -32,9 +43,8 @@ type Props = {
   onDelete: (id: string) => void;
 };
 
-export default function TimelineView({ id, title, events, onDelete }: Props) {
-  const navigation =
-    useNavigation<StackNavigationProp<RootStackParamList, "Home">>();
+export default function TimelineButton({ id, title, events, onDelete }: Props) {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const handleEdit = () => {
     navigation.navigate("Edit", { id, title, events });
@@ -53,7 +63,9 @@ export default function TimelineView({ id, title, events, onDelete }: Props) {
   };
 
   return (
-    <View style={styles.view_timeline_button}>
+    <Pressable onPress={() => {
+    navigation.navigate("View", { id, title, events });
+  }} style={styles.view_timeline_button}>
       <Text style={styles.view_timeline_text}>{title}</Text>
       <View style={styles.buttonRow}>
         <Pressable onPress={handleEdit} style={styles.iconContainer}>
@@ -63,7 +75,7 @@ export default function TimelineView({ id, title, events, onDelete }: Props) {
           <Ionicons name="trash-outline" size={24} color="red" />
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

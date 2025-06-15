@@ -22,7 +22,8 @@ type Props = {
     description: string;
     images: string[];
   }) => void;
-  onDeleteEvent: () => void;
+  onDeleteEvent: 
+  () => void;
 };
 
 export default function EventIcon({
@@ -44,37 +45,6 @@ export default function EventIcon({
 
   const eventDetails = { title, date, description, images };
 
-  // const handleLongPress = () => {
-  //   overlayOpacity.value = withTiming(0.5, { duration: 200 });
-  //   scale.value = withTiming(1.05, { duration: 150 });
-  //   deleteOpacity.value = withTiming(1, { duration: 200 });
-  //   deleteScale.value = withTiming(1, { duration: 200 });
-  //   setShowDelete(true);
-  // };
-
-  // const handlePressOut = () => {
-  //   scale.value = withTiming(1, { duration: 150 });
-  // };
-
-  // const hideDelete = () => {
-  //   overlayOpacity.value = withTiming(0, { duration: 200 });
-  //   deleteOpacity.value = withTiming(0, { duration: 150 });
-  //   deleteScale.value = withTiming(0.9, { duration: 150 }, () => {
-  //     runOnJS(setShowDelete)(false);
-  //   });
-  // };
-
-  // const overlayStyle = useAnimatedStyle(() => ({
-  //   backgroundColor: "rgba(0, 0, 0, 0.5)",
-  //   opacity: overlayOpacity.value,
-  //   position: "absolute",
-  //   top: 0,
-  //   left: 0,
-  //   right: 0,
-  //   bottom: 0,
-  //   zIndex: 50,
-  // }));
-
   const deleteIconStyle = useAnimatedStyle(() => ({
     opacity: deleteOpacity.value,
     transform: [{ scale: deleteScale.value }],
@@ -86,11 +56,7 @@ export default function EventIcon({
 
   return (
     <>
-      {/* Overlay */}
-
-      {/* Event Icon Container */}
       <Animated.View style={[styles.card, { transform: [{ scale }] }]}>
-        {/* Delete Icon */}
         {showDelete && (
           <Animated.View style={deleteIconStyle}>
             <Pressable onPress={onDeleteEvent}>
@@ -98,8 +64,6 @@ export default function EventIcon({
             </Pressable>
           </Animated.View>
         )}
-
-        {/* Event Content */}
         <Pressable
           onPress={() => setModalVisible(true)}
         >
@@ -113,7 +77,6 @@ export default function EventIcon({
           <Text style={styles.titleText}>{eventDetails.title}</Text>
         </Pressable>
 
-        {/* Event Editor Modal */}
         <EventEditor
         onDelete={() => {
     setModalVisible(false);
