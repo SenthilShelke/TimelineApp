@@ -23,29 +23,36 @@ export default function EditScreen({
   navigation: any;
   route: any;
 }) {
-  const scaleValue = useSharedValue(1);
+  const backScale = useSharedValue(1);
+  const addEventScale = useSharedValue(1);
+  const saveScale = useSharedValue(1);
   const inputRef = useRef<TextInput>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [events, setEvents] = useState(
-    (route.params?.events || []).map((event: any) => ({
-      ...event,
-      id: event.id ?? uuidv4(),
-    }))
-  );
+  const seenIds = new Set();
+const [events, setEvents] = useState(
+  (route.params?.events || []).map((event: any) => {
+    let id = event.id ?? uuidv4();
+    while (seenIds.has(id)) {
+      id = uuidv4(); // ensure uniqueness
+    }
+    seenIds.add(id);
+    return { ...event, id };
+  })
+);
   const [timelineTitle, setTimelineTitle] = useState(route.params?.title || "");
 
   const handleBackButton = () => {
-    scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
-      scaleValue.value = withTiming(1, { duration: 100 });
+    backScale.value = withTiming(0.9, { duration: 100 }, () => {
+      backScale.value = withTiming(1, { duration: 100 });
     });
     navigation.goBack();
   };
 
   const handleAddEvent = () => {
-    scaleValue.value = withTiming(0.9, { duration: 100 }, () => {
-      scaleValue.value = withTiming(1, { duration: 100 });
+    addEventScale.value = withTiming(0.9, { duration: 100 }, () => {
+      addEventScale.value = withTiming(1, { duration: 100 });
     });
     setModalVisible(true);
   };
@@ -106,20 +113,24 @@ export default function EditScreen({
   };
 
   const handleSaveTimeline = () => {
-    if (!timelineTitle.trim()) {
-      alert("Please enter a timeline title.");
-      return;
-    }
+  if (!timelineTitle.trim()) {
+    alert("Please enter a timeline title.");
+    return;
+  }
 
-    const timelineData = {
-      id: route.params?.id ?? uuidv4(),
-      title: timelineTitle,
-      events,
-    };
+  saveScale.value = withTiming(0.9, { duration: 100 }, () => {
+    saveScale.value = withTiming(1, { duration: 100 });
+  });
 
-    navigation.goBack();
-    navigation.navigate("Home", { savedTimeline: timelineData });
+  const timelineData = {
+    id: route.params?.id ?? uuidv4(),
+    title: timelineTitle,
+    events,
   };
+
+  navigation.goBack();
+  navigation.navigate("Home", { savedTimeline: timelineData });
+};
 
   const handleDeleteEvent = (id: string) => {
     setEvents(
@@ -153,7 +164,7 @@ export default function EditScreen({
           <Animated.View
             style={[
               styles.goBackButton,
-              { transform: [{ scale: scaleValue }] },
+              { transform: [{ scale: backScale }] },
             ]}
           >
             <Ionicons name="arrow-back-circle" size={30} color="#25292e" />
@@ -166,7 +177,7 @@ export default function EditScreen({
           <Animated.View
             style={[
               styles.add_event_button,
-              { transform: [{ scale: scaleValue }] },
+              { transform: [{ scale: addEventScale }] },
             ]}
           >
             <Text style={styles.new_event_text}>Add Event +</Text>
@@ -190,7 +201,7 @@ export default function EditScreen({
           style={styles.save_button_wrapper}
         >
           <Animated.View
-            style={[styles.save_button, { transform: [{ scale: scaleValue }] }]}
+            style={[styles.save_button, { transform: [{ scale: saveScale }] }]}
           >
             <Text style={styles.save_button_text}>Save Timeline</Text>
           </Animated.View>

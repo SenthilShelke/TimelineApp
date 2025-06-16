@@ -10,8 +10,10 @@ import {
   ScrollView,
   Animated,
 } from "react-native";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useSharedValue, withTiming } from "react-native-reanimated";
+
 
 const { width } = Dimensions.get("window");
 
@@ -28,8 +30,14 @@ type TimelineRouteParams = {
   };
 };
 
-export default function ViewTimelineScreen() {
-  const route = useRoute<RouteProp<TimelineRouteParams, "ViewTimeline">>();
+export default function ViewTimelineScreen({
+  navigation,
+  route,
+}: {
+  navigation: any;
+  route: any;
+}) {
+
   const { title, events: rawEvents } = route.params;
   const events = [...rawEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -37,6 +45,7 @@ export default function ViewTimelineScreen() {
   const slideAnim = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const [pendingIndex, setPendingIndex] = useState<number | null>(null);
+  const backScale = useSharedValue(1);
 
   useEffect(() => {
     if (!events || events.length === 0) return;
@@ -109,9 +118,17 @@ export default function ViewTimelineScreen() {
     }
   };
 
+  const handleBackButton = () => {
+    backScale.value = withTiming(0.9, { duration: 100 }, () => {
+          backScale.value = withTiming(1, { duration: 100 });
+        });
+        navigation.goBack();
+  }
+
   return (
     <View style={styles.container}>
     <Text style={styles.timelineTitle}>{title}</Text>
+
   <Animated.View style={{ opacity: fadeAnim, width: '100%', alignItems: 'center' }}>
     
     {currentImage ? (
@@ -216,13 +233,9 @@ const styles = StyleSheet.create({
     fontFamily: "Futura",
   },
   descriptionBox: {
-    backgroundColor: "#1e1e1e",
-    borderRadius: 15,
-    padding: 20,
-    borderWidth: 2,
-    borderColor: "magenta",
+    padding: 0,
     width: "100%",
-    marginBottom: 30,
+    marginBottom: 20,
   },
   descriptionText: {
     fontSize: 16,
@@ -236,4 +249,15 @@ const styles = StyleSheet.create({
     width: "60%",
     marginBottom: 30,
   },
+  goBackButtonWrapper: {
+  position: "absolute",
+  top: 60,
+  left: 10,
+},
+goBackButton: {
+  marginTop: 4,
+  padding: 7.5,
+  backgroundColor: "magenta",
+  borderRadius: 10,
+}
 });

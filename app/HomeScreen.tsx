@@ -67,6 +67,7 @@ export default function HomeScreen({
       </ScrollView>
       <Pressable
         onPress={() => 
+          
           navigation.navigate("Edit")
           
         }
