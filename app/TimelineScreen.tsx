@@ -13,7 +13,89 @@ import {
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSharedValue, withTiming } from "react-native-reanimated";
+import { useTheme } from "@/theme/ThemeContext";
+import { ColorTheme } from "@/theme/themes";
 
+const getStyles = (colors: ColorTheme["colors"]) =>
+  StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: colors.background,
+      alignItems: "center",
+      paddingTop: 60,
+      paddingHorizontal: 20,
+    },
+    image: {
+      width: width * 0.97,
+      height: 300,
+      borderRadius: 20,
+      marginBottom: 20,
+    },
+    imagePlaceholder: {
+      width: width * 0.8,
+      height: 200,
+      borderRadius: 20,
+      backgroundColor: colors.card,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 20,
+    },
+    eventTitle: {
+      fontSize: 26,
+      color: colors.primary,
+      fontFamily: "Futura",
+      marginBottom: 5,
+      textAlign: "center",
+    },
+    timelineTitle: {
+      fontSize: 30,
+      color: colors.primary,
+      fontFamily: "Futura",
+      textAlign: "center",
+      marginBottom: 20,
+      paddingVertical: 5,
+      paddingHorizontal: 20,
+      backgroundColor: colors.card,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    date: {
+      fontSize: 16,
+      color: 'grey',
+      marginBottom: 15,
+      fontFamily: "Futura",
+    },
+    descriptionBox: {
+      padding: 0,
+      width: "100%",
+      marginBottom: 20,
+    },
+    descriptionText: {
+      fontSize: 16,
+      color: colors.text,
+      fontFamily: "Futura",
+      textAlign: "left",
+    },
+    navigationButtons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      width: "60%",
+      marginBottom: 30,
+      color: colors.primary
+    },
+    goBackButtonWrapper: {
+      position: "absolute",
+      top: 60,
+      left: 10,
+    },
+    goBackButton: {
+      marginTop: 4,
+      padding: 7.5,
+      backgroundColor: colors.primary,
+      borderRadius: 10,
+    },
+  });
 
 const { width } = Dimensions.get("window");
 
@@ -30,6 +112,7 @@ type TimelineRouteParams = {
   };
 };
 
+
 export default function ViewTimelineScreen({
   navigation,
   route,
@@ -37,7 +120,9 @@ export default function ViewTimelineScreen({
   navigation: any;
   route: any;
 }) {
-
+const { theme } = useTheme();
+      const colors = theme.colors;
+      const styles = getStyles(colors);
   const { title, events: rawEvents } = route.params;
   const events = [...rawEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -164,7 +249,7 @@ export default function ViewTimelineScreen({
       <Ionicons
         name="chevron-back-circle"
         size={40}
-        color={currentIndex === 0 ? "grey" : "magenta"}
+        color={currentIndex === 0 ? "grey" : colors.primary}
       />
     </Pressable>
 
@@ -175,7 +260,7 @@ export default function ViewTimelineScreen({
       <Ionicons
         name="chevron-forward-circle"
         size={40}
-        color={currentIndex === events.length - 1 ? "grey" : "magenta"}
+        color={currentIndex === events.length - 1 ? "grey" : colors.primary}
       />
     </Pressable>
   </View>

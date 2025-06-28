@@ -8,6 +8,40 @@ import Animated, {
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import EventEditor from "./EventEditor";
+import { useTheme } from "@/theme/ThemeContext";
+import { ColorTheme } from "@/theme/themes";
+
+const getStyles = (colors: ColorTheme["colors"]) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: 'white',
+      borderRadius: 10,
+      paddingVertical: 8,
+      paddingHorizontal: 15,
+      marginHorizontal: 15,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 2,
+      borderColor: colors.primary,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    titleText: {
+      color: 'black',
+      fontSize: 12,
+      fontWeight: "bold",
+      textAlign: "center",
+    },
+    dateText: {
+      color: 'black',
+      fontSize: 10,
+      marginTop: 2,
+      textAlign: "center",
+    },
+  });
 
 type Props = {
   id: string;
@@ -35,6 +69,9 @@ export default function EventIcon({
   onUpdateEvent,
   onDeleteEvent,
 }: Props) {
+  const { theme } = useTheme();
+  const colors = theme.colors;
+  const styles = getStyles(colors);
   const scale = useSharedValue(1);
   const deleteOpacity = useSharedValue(0);
   const deleteScale = useSharedValue(0.9);
@@ -105,33 +142,3 @@ export default function EventIcon({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    marginHorizontal: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "magenta",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  titleText: {
-    color: "#1e1e1e",
-    fontSize: 12,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  dateText: {
-    color: "grey",
-    fontSize: 10,
-    marginTop: 2,
-    textAlign: "center",
-  },
-});

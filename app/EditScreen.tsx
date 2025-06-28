@@ -15,6 +15,106 @@ import EventEditor from "@/components/EventEditor";
 import Timeline from "@/components/Timeline";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { v4 as uuidv4 } from "uuid";
+import { useTheme } from "@/theme/ThemeContext";
+import { ColorTheme } from "@/theme/themes";
+
+
+const getStyles = (colors: ColorTheme["colors"]) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    text: {
+      color: colors.text,
+    },
+    goBackButtonWrapper: {
+      position: "absolute",
+      top: 60,
+      left: 10,
+    },
+    goBackButton: {
+      marginTop: 4,
+      padding: 7.5,
+      backgroundColor: colors.primary,
+      borderRadius: 10,
+    },
+    input: {
+      position: "absolute",
+      top: 60,
+      textAlign: "center",
+      height: 50,
+      width: "50%",
+      borderColor: colors.border,
+      borderWidth: 2,
+      borderRadius: 10,
+      color: colors.text,
+      fontSize: 20,
+      backgroundColor: colors.card,
+      fontFamily: "Futura",
+    },
+    add_event_button_wrapper: {
+      position: "absolute",
+      bottom: 650,
+      left: 0,
+      right: 0,
+      alignSelf: "center",
+      alignItems: "center",
+      width: "50%",
+      marginLeft: "25%",
+    },
+    add_event_button: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderRadius: 20,
+      paddingHorizontal: 30,
+      paddingVertical: 5,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+    },
+    new_event_text: {
+      fontFamily: "Futura",
+      color: colors.card,
+      fontSize: 20,
+    },
+    timeline: {
+      position: "absolute",
+      top: "50%",
+      left: "10%",
+      right: "10%",
+      height: 5,
+      backgroundColor: colors.text,
+    },
+    timelineContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    save_button_wrapper: {
+      position: "absolute",
+      bottom: 25,
+      alignSelf: "center",
+      width: "50%",
+    },
+    save_button: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderRadius: 20,
+      paddingHorizontal: 30,
+      paddingVertical: 5,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      marginBottom: 15,
+    },
+    save_button_text: {
+      color: colors.card,
+      fontSize: 20,
+      fontFamily: "Futura",
+    },
+  });
+
+
 
 export default function EditScreen({
   navigation,
@@ -23,6 +123,9 @@ export default function EditScreen({
   navigation: any;
   route: any;
 }) {
+  const { theme } = useTheme();
+  const colors = theme.colors;
+  const styles = getStyles(colors);
   const backScale = useSharedValue(1);
   const addEventScale = useSharedValue(1);
   const saveScale = useSharedValue(1);
@@ -211,96 +314,3 @@ const [events, setEvents] = useState(
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    color: "white",
-  },
-  goBackButtonWrapper: {
-    position: "absolute",
-    top: 60,
-    left: 10,
-  },
-  goBackButton: {
-    marginTop: 4,
-    padding: 7.5,
-    backgroundColor: "magenta",
-    borderRadius: 10,
-  },
-  input: {
-    position: "absolute",
-    top: 60,
-    textAlign: "center",
-    height: 50,
-    width: "50%",
-    borderColor: "magenta",
-    borderWidth: 2,
-    borderRadius: 10,
-    color: "white",
-    fontSize: 20,
-    backgroundColor: "#1e1e1e",
-    fontFamily: "Futura",
-  },
-  add_event_button_wrapper: {
-    position: "absolute",
-    bottom: 650,
-    left: 0,
-    right: 0,
-    alignSelf: "center",
-    alignItems: "center",
-    width: "50%",
-    marginLeft: "25%",
-  },
-  add_event_button: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 20,
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    backgroundColor: "magenta",
-    alignItems: "center",
-  },
-  new_event_text: {
-    fontFamily: "Futura",
-    color: "#1e1e1e",
-    fontSize: 20,
-  },
-  timeline: {
-    position: "absolute",
-    top: "50%",
-    left: "10%",
-    right: "10%",
-    height: 5,
-    backgroundColor: "white",
-  },
-  timelineContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  save_button_wrapper: {
-    position: "absolute",
-    bottom: 25,
-    alignSelf: "center",
-    width: "50%",
-  },
-  save_button: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 20,
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    backgroundColor: "magenta",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  save_button_text: {
-    color: "#1e1e1e",
-    fontSize: 20,
-    fontFamily: "Futura",
-  },
-});

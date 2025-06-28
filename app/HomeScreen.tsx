@@ -3,6 +3,46 @@ import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import TimelineButton from "../components/TimelineButton";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { useTheme } from "@/theme/ThemeContext";
+import { ColorTheme } from "@/theme/themes";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+
+const getStyles = (colors: ColorTheme["colors"]) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      backgroundColor: colors.background,
+      paddingTop: 60,
+    },
+    title: {
+      textAlign: "center",
+      color: colors.primary,
+      fontSize: 30,
+      fontFamily: "Futura",
+      marginBottom: 20,
+    },
+    add_timeline_button: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderRadius: 20,
+      paddingHorizontal: 30,
+      paddingVertical: 5,
+      backgroundColor: colors.primary,
+      bottom: 30,
+    },
+    new_timeline_text: {
+      fontFamily: "Futura",
+      fontSize: 20,
+    },
+    noTimelinesText: {
+      color: 'grey',
+      fontSize: 18,
+      textAlign: "center",
+      marginTop: 20,
+      fontFamily: "Futura",
+    },
+  });
 
 export default function HomeScreen({
   navigation,
@@ -11,6 +51,9 @@ export default function HomeScreen({
   navigation: any;
   route: any;
 }) {
+  const { theme } = useTheme();
+    const colors = theme.colors;
+    const styles = getStyles(colors);
   const scaleValue = useSharedValue(1);
   const [timelines, setTimelines] = useState<
     { id: string; title: string; events: any[] }[]
@@ -47,6 +90,7 @@ export default function HomeScreen({
 
   return (
     <View style={styles.container}>
+      <ThemeSwitcher></ThemeSwitcher>
       <Text style={styles.title}>Your Timelines</Text>
       <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (
@@ -79,39 +123,3 @@ export default function HomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#25292e",
-    paddingTop: 60,
-  },
-  title: {
-    textAlign: "center",
-    color: "magenta",
-    fontSize: 30,
-    fontFamily: "Futura",
-    marginBottom: 20,
-  },
-  add_timeline_button: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 20,
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    backgroundColor: "magenta",
-    bottom: 30,
-  },
-  new_timeline_text: {
-    fontFamily: "Futura",
-    color: "#1e1e1e",
-    fontSize: 20,
-  },
-  noTimelinesText: {
-    color: "grey",
-    fontSize: 18,
-    textAlign: "center",
-    marginTop: 20,
-    fontFamily: "Futura",
-  },
-});

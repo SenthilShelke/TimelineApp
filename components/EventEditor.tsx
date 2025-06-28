@@ -18,6 +18,143 @@ import { launchCamera, Asset, CameraOptions } from "react-native-image-picker";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { v4 as uuidv4 } from "uuid";
+import { useTheme } from "@/theme/ThemeContext";
+import { ColorTheme } from "@/theme/themes";
+
+
+const getStyles = (colors: ColorTheme["colors"]) =>
+  StyleSheet.create({
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalView: {
+      position: "absolute",
+      bottom: 0,
+      width: "100%",
+      height: "70%",
+      backgroundColor: colors.card,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      padding: 20,
+      alignItems: "center",
+      shadowColor: "#000",
+    },
+    eventTitleText: {
+      marginBottom: 15,
+      textAlign: "center",
+      color: colors.text,
+      borderWidth: 2,
+      borderRadius: 10,
+      backgroundColor: colors.card,
+      borderColor: colors.primary,
+      padding: 10,
+      fontFamily: "Futura",
+      width: 370,
+    },
+    descriptionText: {
+      marginVertical: 15,
+      textAlign: "left",
+      textAlignVertical: "top",
+      color: colors.text,
+      borderWidth: 2,
+      borderRadius: 10,
+      backgroundColor: colors.card,
+      borderColor: colors.primary,
+      width: 370,
+      height: 120,
+      paddingHorizontal: 10,
+      paddingVertical: 10,
+      fontFamily: "Futura",
+      marginLeft: 6,
+    },
+    dismissArea: {
+      flex: 1,
+      width: "100%",
+    },
+    saveButton: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderRadius: 10,
+      paddingHorizontal: 30,
+      paddingVertical: 5,
+      backgroundColor: colors.primary,
+      alignItems: "center",
+      bottom: 200,
+    },
+    saveButtonWrapper: {
+      position: "absolute",
+      bottom: 25,
+      left: 0,
+      right: 0,
+      alignSelf: "center",
+      alignItems: "center",
+      width: "50%",
+      marginLeft: "25%",
+    },
+    saveButtonText: {
+      color: colors.card,
+      fontSize: 16,
+      fontFamily: "Futura",
+    },
+    imageButton: {
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderRadius: 10,
+      padding: 10,
+      backgroundColor: colors.primary,
+      marginVertical: 10,
+      alignItems: "center",
+      width: 180,
+      marginHorizontal: 5,
+    },
+    imageButtonText: {
+      color: colors.card,
+      fontSize: 16,
+      fontFamily: "Futura",
+    },
+    imageContainer: {
+      flexDirection: "row",
+      marginVertical: 10,
+      marginTop: 60,
+      alignContent: "center",
+    },
+    imagePreview: {
+      width: 100,
+      height: 100,
+      borderRadius: 10,
+      marginHorizontal: 5,
+      borderWidth: 2,
+      borderColor: colors.primary,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    deleteButtonWrapper: {
+      position: "absolute",
+      bottom: 60,
+      left: 0,
+      right: 0,
+      alignSelf: "center",
+      alignItems: "center",
+      width: "50%",
+      marginLeft: "25%",
+    },
+    deleteButton: {
+      borderWidth: 2,
+      borderColor: "red",
+      borderRadius: 10,
+      paddingHorizontal: 30,
+      paddingVertical: 5,
+      backgroundColor: "red",
+      alignItems: "center",
+    },
+    deleteButtonText: {
+      color: colors.card,
+      fontSize: 16,
+      fontFamily: "Futura",
+    },
+  });
 
 type Props = {
   visible: boolean;
@@ -46,6 +183,9 @@ export default function EventEditor({
   initialDescription,
   initialImages = [],
 }: Props) {
+  const { theme } = useTheme();
+const colors = theme.colors;
+const styles = getStyles(colors);
   const inputRef = useRef<TextInput>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(
     initialDate ? new Date(initialDate) : new Date()
@@ -243,135 +383,4 @@ export default function EventEditor({
   ) : null;
 }
 
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalView: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    height: "70%",
-    backgroundColor: "#1e1e1e",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    alignItems: "center",
-    shadowColor: "#000",
-  },
-  eventTitleText: {
-    marginBottom: 15,
-    textAlign: "center",
-    color: "white",
-    borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: "#1e1e1e",
-    borderColor: "magenta",
-    padding: 10,
-    fontFamily: "Futura",
-    width: 370,
-  },
-  descriptionText: {
-    marginVertical: 15,
-    textAlign: "left",
-    textAlignVertical: "top",
-    color: "white",
-    borderWidth: 2,
-    borderRadius: 10,
-    backgroundColor: "#1e1e1e",
-    borderColor: "magenta",
-    width: 370,
-    height: 120,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    fontFamily: "Futura",
-    marginLeft: 6,
-  },
-  dismissArea: {
-    flex: 1,
-    width: "100%",
-  },
-  saveButton: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 10,
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    backgroundColor: "magenta",
-    alignItems: "center",
-    bottom: 200,
-  },
-  saveButtonWrapper: {
-    position: "absolute",
-    bottom: 25,
-    left: 0,
-    right: 0,
-    alignSelf: "center",
-    alignItems: "center",
-    width: "50%",
-    marginLeft: "25%",
-  },
-  saveButtonText: {
-    color: "#1e1e1e",
-    fontSize: 16,
-    fontFamily: "Futura",
-  },
-  imageButton: {
-    borderWidth: 2,
-    borderColor: "magenta",
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "magenta",
-    marginVertical: 10,
-    alignItems: "center",
-    width: 180,
-    marginHorizontal: 5,
-  },
-  imageButtonText: {
-    color: "#1e1e1e",
-    fontSize: 16,
-    fontFamily: "Futura",
-  },
-  imageContainer: {
-    flexDirection: "row",
-    marginVertical: 10,
-    marginTop: 60,
-    alignContent: "center",
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    marginHorizontal: 5,
-    borderWidth: 2,
-    borderColor: "magenta",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  deleteButtonWrapper: {
-    position: "absolute",
-    bottom: 60,
-    left: 0,
-    right: 0,
-    alignSelf: "center",
-    alignItems: "center",
-    width: "50%",
-    marginLeft: "25%",
-  },
-  deleteButton: {
-    borderWidth: 2,
-    borderColor: "red",
-    borderRadius: 10,
-    paddingHorizontal: 30,
-    paddingVertical: 5,
-    backgroundColor: "red",
-    alignItems: "center",
-  },
-  deleteButtonText: {
-    color: "#1e1e1e",
-    fontSize: 16,
-    fontFamily: "Futura",
-  },
-});
+
