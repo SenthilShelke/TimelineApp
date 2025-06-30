@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import { Ionicons } from "@expo/vector-icons";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -42,6 +43,19 @@ const getStyles = (colors: ColorTheme["colors"]) =>
       marginTop: 20,
       fontFamily: "Futura",
     },
+    settingsIconWrapper: {
+      position: "absolute",
+      top: 60,
+      right: 20,
+      backgroundColor: colors.background,
+      borderRadius: 20,
+      padding: 5,
+      borderWidth: 2,
+      borderColor: colors.primary,
+    },
+    settingsIcon: {
+      color: colors.primary,
+    }
   });
 
 export default function HomeScreen({
@@ -90,7 +104,15 @@ export default function HomeScreen({
 
   return (
     <View style={styles.container}>
-      <ThemeSwitcher></ThemeSwitcher>
+      {/* <ThemeSwitcher></ThemeSwitcher> */}
+     <Pressable
+  style={styles.settingsIconWrapper}
+  onPress={() => {
+    navigation.navigate("Settings");
+  }}
+>
+  <Ionicons name="cog" size={30} style={styles.settingsIcon} />
+</Pressable>
       <Text style={styles.title}>Your Timelines</Text>
       <ScrollView scrollEnabled={timelines.length > 0}>
         {timelines.length > 0 ? (

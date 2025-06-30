@@ -5,6 +5,7 @@ import HomeScreen from "./HomeScreen";
 import EditScreen from "./EditScreen";
 import 'react-native-get-random-values';
 import ViewTimeline from "@/app/TimelineScreen";
+import SettingsScreen from "./SettingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -14,6 +15,7 @@ export default function Index() {
         <Stack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
         <Stack.Screen name="Edit" component={EditScreen} options={{headerShown: false}}/>
         <Stack.Screen name="View" component={ViewTimeline} options={{headerShown: false}}/>
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{headerShown: false}}/>
       </Stack.Navigator>
   );
 }
