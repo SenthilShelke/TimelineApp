@@ -133,11 +133,12 @@ export default function EditScreen({
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const seenIds = new Set();
+  const simpleId = () => Math.random().toString(36).substring(2, 10);
 const [events, setEvents] = useState(
   (route.params?.events || []).map((event: any) => {
-    let id = event.id ?? uuidv4();
+    let id = event.id ?? simpleId();
     while (seenIds.has(id)) {
-      id = uuidv4(); // ensure uniqueness
+      id = simpleId(); // ensure uniqueness
     }
     seenIds.add(id);
     return { ...event, id };
@@ -178,7 +179,7 @@ const [events, setEvents] = useState(
         ...prevEvents,
         {
           ...newEvent,
-          id: uuidv4(),
+          id: simpleId(),
         },
       ]
     );
@@ -225,7 +226,7 @@ const [events, setEvents] = useState(
   });
 
   const timelineData = {
-    id: route.params?.id ?? uuidv4(),
+    id: route.params?.id ?? simpleId(),
     title: timelineTitle,
     events,
   };

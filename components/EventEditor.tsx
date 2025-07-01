@@ -198,6 +198,7 @@ const styles = getStyles(colors);
   );
   const [photos, setPhotos] = useState<string[]>(initialImages);
   const scaleValue = useSharedValue(1);
+  const simpleId = () => Math.random().toString(36).substring(2, 10);
 
   useEffect(() => {
     if (visible) {
@@ -269,7 +270,7 @@ const styles = getStyles(colors);
     }
 
     onSave({
-      id: uuidv4(),
+      id: simpleId(),
       title,
       date: selectedDate.toISOString(),
       description,

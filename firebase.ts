@@ -2,19 +2,28 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENT_ID
+} from '@env';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
-  apiKey: "AIzaSyCGcOLdvploYepcVFrM7XGC-HUf7NUqWXo",
-  authDomain: "timeline-app-2a89f.firebaseapp.com",
-  projectId: "timeline-app-2a89f",
-  storageBucket: "timeline-app-2a89f.firebasestorage.app",
-  messagingSenderId: "620051680129",
-  appId: "1:620051680129:web:6b3cb8c898ea61882cf680",
-  measurementId: "G-V5M6W9B894"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
