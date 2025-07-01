@@ -8,6 +8,9 @@ import { ColorTheme } from "@/theme/themes";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Ionicons } from "@expo/vector-icons";
 import { Linking } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase"; 
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -55,7 +58,7 @@ const getStyles = (colors: ColorTheme["colors"]) =>
         height: 2,
         backgroundColor: "grey",
         marginVertical: 20,
-        width: "80%",
+        width: "90%",
         alignSelf: "center",
         borderRadius: 1,
     },
@@ -96,6 +99,19 @@ export default function SettingsScreen({
         );
     };
 
+    const handleLogout = async () => {
+      try {
+        await signOut(auth);
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Login" }],
+        });
+      } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Logout failed. Try again.");
+      }
+    };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
@@ -115,11 +131,7 @@ export default function SettingsScreen({
               <View style={styles.divider} />
               <Text style={styles.headerText}>Theme</Text>
               <ThemeSwitcher />
-              <View style={styles.divider} />
-              <Text style={styles.headerText}>App Info</Text>
-              <Text style={{ color: colors.text, fontFamily: "Futura", textAlign: "center" }}>
-              Version 1.0.0{"\n"}Created by Senthil Shelke
-              </Text>
+             
               <View style={styles.divider} />
               <Text style={styles.headerText}>Feedback</Text>
                 <Pressable onPress={handleSendFeedback}>
@@ -133,7 +145,27 @@ export default function SettingsScreen({
                     Send feedback via email
                 </Text>
                 </Pressable>
-                <View style={styles.divider} />
+                 <View style={styles.divider} />
+                 
+              <Text style={styles.headerText}>App Info</Text>
+              <Text style={{ color: colors.text, fontFamily: "Futura", textAlign: "center" }}>
+              Version 1.0.0{"\n"}Created by Senthil Shelke
+              </Text>
+              <View style={styles.divider} />
+              <Text style={styles.headerText}>Account</Text>
+              <Pressable onPress={handleLogout}>
+                <Text
+                  style={{
+                    color: "red",
+                    fontFamily: "Futura",
+                    fontSize: 16,
+                    textDecorationLine: "underline",
+                    marginBottom: 30,
+                  }}
+                >
+                  Log out
+                </Text>
+              </Pressable>
 
     </View>
   );
