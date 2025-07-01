@@ -18,7 +18,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
 
-
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
     container: {
