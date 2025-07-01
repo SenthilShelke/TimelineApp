@@ -67,27 +67,27 @@ export const themes: ColorTheme[] = [
     },
   },
   {
-  name: "Strawberry Milk",
-  colors: {
-    primary: "#ff80ab",      // pink
-    secondary: "#ffe4e1",    // misty rose
-    background: "#fff0f5",   // lavender blush
-    card: "#ffe4e1",         // soft pink
-    text: "#4a4a4a",
-    border: "#ff80ab",
+    name: "Strawberry Milk",
+    colors: {
+      primary: "#ff80ab", // pink
+      secondary: "#ffe4e1", // misty rose
+      background: "#fff0f5", // lavender blush
+      card: "#ffe4e1", // soft pink
+      text: "#4a4a4a",
+      border: "#ff80ab",
+    },
   },
-},
-{
-  name: "Cyberpunk",
-  colors: {
-    primary: "#f50057",      // neon pink
-    secondary: "#00e5ff",    // neon cyan
-    background: "#000000",   // true black
-    card: "#1a1a1a",         // off-black
-    text: "#e0e0e0",
-    border: "#f50057",
+  {
+    name: "Cyberpunk",
+    colors: {
+      primary: "#f50057", // neon pink
+      secondary: "#00e5ff", // neon cyan
+      background: "#000000", // true black
+      card: "#1a1a1a", // off-black
+      text: "#e0e0e0",
+      border: "#f50057",
+    },
   },
-},
   {
     name: "Forest",
     colors: {
@@ -100,16 +100,14 @@ export const themes: ColorTheme[] = [
     },
   },
   {
-  name: "Volt",
-  colors: {
-    primary: "#c6ff00",      // neon lime
-    secondary: "#64dd17",    // vibrant green
-    background: "#1b1b1b",   // deep dark grey
-    card: "#2c2c2c",         // mid grey
-    text: "#e0f7fa",         // soft electric blue
-    border: "#c6ff00",
+    name: "Volt",
+    colors: {
+      primary: "#c6ff00", // neon lime
+      secondary: "#64dd17", // vibrant green
+      background: "#1b1b1b", // deep dark grey
+      card: "#2c2c2c", // mid grey
+      text: "#e0f7fa", // soft electric blue
+      border: "#c6ff00",
+    },
   },
-},
-
-
 ];
