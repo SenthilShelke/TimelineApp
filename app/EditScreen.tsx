@@ -17,6 +17,8 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -215,7 +217,7 @@ const [events, setEvents] = useState(
     );
   };
 
-  const handleSaveTimeline = () => {
+const handleSaveTimeline = async () => {
   if (!timelineTitle.trim()) {
     alert("Please enter a timeline title.");
     return;
@@ -225,14 +227,32 @@ const [events, setEvents] = useState(
     saveScale.value = withTiming(1, { duration: 100 });
   });
 
+  const timelineId = route.params?.id ?? simpleId();
   const timelineData = {
-    id: route.params?.id ?? simpleId(),
+    id: timelineId,
     title: timelineTitle,
     events,
   };
 
-  navigation.goBack();
-  navigation.navigate("Home", { savedTimeline: timelineData });
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("No logged-in user found. Please log in again.");
+      return;
+    }
+
+    await setDoc(
+      doc(db, "users", user.uid, "timelines", timelineId),
+      timelineData
+    );
+
+    console.log("Timeline saved directly from EditScreen!");
+
+    navigation.goBack();
+  } catch (e) {
+    console.error("Failed to save timeline:", e);
+    alert("Failed to save timeline. Please try again.");
+  }
 };
 
   const handleDeleteEvent = (id: string) => {

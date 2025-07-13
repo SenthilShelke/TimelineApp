@@ -106,6 +106,10 @@ export default function HomeScreen({
     }
   };
 
+
+
+  
+
   useEffect(() => {
     let unsubscribe: () => void; // Variable to hold the unsubscribe function
 
@@ -164,34 +168,7 @@ export default function HomeScreen({
 
   // This useEffect is now for saving the timeline data to Firestore
   // It will be triggered when route.params?.savedTimeline is set from EditScreen
-  useEffect(() => {
-    const saveTimelineToFirestore = async () => {
-      if (route.params?.savedTimeline) {
-        const user = auth.currentUser;
-        if (!user) {
-          console.warn("No user logged in to save timeline.");
-          navigation.setParams({ savedTimeline: null }); // Clear param
-          return;
-        }
 
-        const timelineData = route.params.savedTimeline;
-        const timelineId = timelineData.id; // Use the existing ID or a new one
-
-        try {
-          // Path: /users/{uid}/timelines/{timelineId}
-          await setDoc(doc(db, "users", user.uid, "timelines", timelineId), timelineData);
-          console.log("Timeline saved to Firestore successfully!");
-        } catch (e) {
-          console.error("Error saving timeline to Firestore:", e);
-        }
-
-        // Clear the param after saving/attempting to save
-        navigation.setParams({ savedTimeline: null });
-      }
-    };
-
-    saveTimelineToFirestore();
-  }, [route.params?.savedTimeline, navigation]); // Added navigation to deps for best practice
 
   // Your existing useEffect for `route.params?.cleared` remains the same if needed for local clearing,
   // but if you clear from Firestore, the listener will update the state.
