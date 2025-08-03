@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.senthilshelke.FirstNativeApp"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +39,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "96500122-3de5-4834-a87d-bde7313aa10f"
+      }
+    },
+    "owner": "senthilshelke",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/96500122-3de5-4834-a87d-bde7313aa10f"
     }
   }
 }
