@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 16.17.3",
+    "version": ">= 6.3.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -12,8 +12,12 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "node": "18.19.1"
+      "node": "18.19.1",
+      "hooks": {
+        "pre-install": "eas-build-pre-install.sh"
+      },
+      "developmentClient": false,
+      "distribution": "internal"
     }
   },
   "submit": {
