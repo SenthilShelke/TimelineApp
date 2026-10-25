@@ -212,7 +212,7 @@ const styles = getStyles(colors);
 
   const pickImage = async (index: number | null = null) => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
     });
@@ -244,7 +244,7 @@ const styles = getStyles(colors);
     }
 
     let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
       base64: false,
@@ -311,7 +311,7 @@ const styles = getStyles(colors);
               value={selectedDate || new Date()}
               mode="date"
               display="default"
-              onChange={(event, date) => {
+              onValueChange={(event, date) => {
                 if (date) {
                   setSelectedDate(date);
                 }

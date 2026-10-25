@@ -18,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
 import { createTimeline, updateTimeline } from "@/api/timelines";
+import { uploadImages } from "@/api/uploads";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -227,17 +228,21 @@ const handleSaveTimeline = async () => {
   });
 
   const existingId: string | undefined = route.params?.id;
-  const payload = {
-    title: timelineTitle.trim(),
-    events: events.map((e: any) => ({
-      title: e.title,
-      date: e.date,
-      description: e.description ?? "",
-      images: e.images ?? [],
-    })),
-  };
 
   try {
+    // Upload any new local (file://) images to storage first, replacing them
+    // with their public URLs. Already-uploaded http(s) URLs pass through.
+    const eventsWithUploadedImages = await Promise.all(
+      events.map(async (e: any) => ({
+        title: e.title,
+        date: e.date,
+        description: e.description ?? "",
+        images: await uploadImages(e.images ?? []),
+      }))
+    );
+
+    const payload = { title: timelineTitle.trim(), events: eventsWithUploadedImages };
+
     if (existingId) {
       await updateTimeline(existingId, payload);
     } else {

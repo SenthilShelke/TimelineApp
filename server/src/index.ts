@@ -4,6 +4,7 @@ import cors from "cors";
 import { prisma } from "./prisma.js";
 import { authRouter } from "./auth/routes.js";
 import { timelinesRouter } from "./timelines/routes.js";
+import { uploadsRouter } from "./uploads/routes.js";
 
 const app = express();
 app.use(cors());
@@ -21,6 +22,7 @@ app.get("/health", async (_req, res) => {
 
 app.use("/auth", authRouter);
 app.use("/timelines", timelinesRouter);
+app.use("/uploads", uploadsRouter);
 
 const port = Number(process.env.PORT ?? 4000);
 app.listen(port, () => {
