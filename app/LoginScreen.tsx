@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
-import { auth } from "../firebase";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signup, login } from "@/api/auth";
+import { ApiError } from "@/api/client";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
-import { sendEmailVerification } from "firebase/auth";
 import { Keyboard, TouchableWithoutFeedback } from "react-native";
 
 export default function LoginScreen({ navigation }: any) {
@@ -37,18 +33,14 @@ export default function LoginScreen({ navigation }: any) {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      await sendEmailVerification(user);
-      setVerificationSent(true); // show the message
+      await signup(email.trim(), password);
+      // Backend signs the user in immediately (returns tokens), so go to Home.
+      navigation.replace("Home");
     } catch (error: any) {
-      if (error.code === "auth/email-already-in-use") {
+      if (error instanceof ApiError && error.status === 409) {
         setErrorMessage("This email is already in use.");
+      } else if (error instanceof ApiError && error.status === 400) {
+        setErrorMessage(error.message);
       } else {
         setErrorMessage("Signup failed. Please try again.");
       }
@@ -58,27 +50,16 @@ export default function LoginScreen({ navigation }: any) {
   const handleLogin = async () => {
     setErrorMessage("");
 
-    if (!email && !password) {
+    if (!email || !password) {
       setErrorMessage("Please enter both email and password.");
       return;
     }
 
-    {
-      verificationSent && (
-        <Text style={styles.verificationText}>
-          Verification email sent. Please check your inbox before logging in.
-        </Text>
-      );
-    }
-
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await login(email.trim(), password);
       navigation.replace("Home");
     } catch (error: any) {
-      if (
-        error.code === "auth/wrong-password" ||
-        error.code === "auth/user-not-found"
-      ) {
+      if (error instanceof ApiError && error.status === 401) {
         setErrorMessage("Invalid email or password.");
       } else {
         setErrorMessage("Login failed. Please try again.");

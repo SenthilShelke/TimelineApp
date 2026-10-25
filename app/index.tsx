@@ -5,32 +5,29 @@ import HomeScreen from "./HomeScreen";
 import EditScreen from "./EditScreen";
 import ViewTimeline from "./TimelineScreen";
 import SettingsScreen from "./SettingsScreen";
-import LoginScreen from "./LoginScreen"; // <- you'll create this next
-import { onAuthStateChanged, getAuth } from "firebase/auth";
-import { auth } from "@/firebase";
-import type { User } from "firebase/auth";
+import LoginScreen from "./LoginScreen";
+import { getCurrentUser } from "@/api/auth";
+import type { AuthUser } from "@/api/types";
 
 const Stack = createStackNavigator();
 
 export default function Index() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    // If logged in and email is verified, allow access
-    if (user && user.emailVerified) {
-      setUser(user);
-    } else {
-      setUser(null); // treat unverified users like logged out
-    }
-    setLoading(false);
-  });
+    // On launch, check for a stored token and validate it against the API.
+    (async () => {
+      try {
+        const current = await getCurrentUser();
+        setUser(current);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-  return unsubscribe;
-}, []);
-
-  if (loading) return null; 
+  if (loading) return null;
 
   return (
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={user ? "Home" : "Login"}>

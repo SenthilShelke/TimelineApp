@@ -8,9 +8,7 @@ import { ColorTheme } from "@/theme/themes";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Ionicons } from "@expo/vector-icons";
 import { Linking } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { signOut } from "firebase/auth";
-import { auth } from "@/firebase"; 
+import { logout } from "@/api/auth";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -101,7 +99,7 @@ export default function SettingsScreen({
 
     const handleLogout = async () => {
       try {
-        await signOut(auth);
+        await logout();
         navigation.reset({
           index: 0,
           routes: [{ name: "Login" }],

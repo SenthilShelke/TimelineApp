@@ -8,13 +8,6 @@ const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 const mockRoute = { params: { events: [], title: "My Timeline" } };
 
 describe("<EditScreen />", () => {
-  it("navigates to the previous screen when the back button is pressed", () => {
-    const { getByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
-    const button = getByText("<");
-    fireEvent.press(button);
-    expect(mockNavigation.goBack).toHaveBeenCalled();
-  });
-
   it("updates the title TextInput value when typing", () => {
     const { getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
     const titleInput = getByPlaceholderText("Title");

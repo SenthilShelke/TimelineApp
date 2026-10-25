@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import TimelineButton from "../components/TimelineButton";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { Ionicons } from "@expo/vector-icons";
-import { auth, db } from "@/firebase"; // <-- IMPORTANT: Also import 'db'
-import {
-  collection,
-  query,
-  where,
-  onSnapshot, // For real-time updates
-  doc,
-  deleteDoc, // For deleting timelines
-  setDoc, // For saving/updating timelines
-} from "firebase/firestore"; // <-- ADD FIRESTORE IMPORTS
-
-
-// When saving data
-// await AsyncStorage.setItem(storageKey, JSON.stringify(timelines));
+import { listTimelines, deleteTimeline } from "@/api/timelines";
+import type { Timeline } from "@/api/types";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -83,103 +71,33 @@ export default function HomeScreen({
     const colors = theme.colors;
     const styles = getStyles(colors);
   const scaleValue = useSharedValue(1);
-  const [timelines, setTimelines] = useState<
-    { id: string; title: string; events: any[] }[]
-  >([]);
+  const [timelines, setTimelines] = useState<Timeline[]>([]);
 
-
-  const handleDeleteTimeline = async (id: string) => { // Make async to delete from Firestore
+  const loadTimelines = useCallback(async () => {
     try {
-      const user = auth.currentUser;
-      if (user) {
-        // Delete from Firestore
-        await deleteDoc(doc(db, "users", user.uid, "timelines", id));
-        // Update local state (Firestore listener will also handle this)
-        setTimelines((prevTimelines) =>
-          prevTimelines.filter((timeline) => timeline.id !== id)
-        );
-      } else {
-        console.warn("No user logged in to delete timeline.");
-      }
+      const data = await listTimelines();
+      setTimelines(data);
+    } catch (e) {
+      console.error("Failed to load timelines:", e);
+    }
+  }, []);
+
+  // Re-fetch whenever the screen comes into focus (e.g. returning from Edit).
+  // This replaces Firestore's real-time onSnapshot listener.
+  useFocusEffect(
+    useCallback(() => {
+      loadTimelines();
+    }, [loadTimelines])
+  );
+
+  const handleDeleteTimeline = async (id: string) => {
+    try {
+      await deleteTimeline(id);
+      setTimelines((prev) => prev.filter((timeline) => timeline.id !== id));
     } catch (e) {
       console.error("Error deleting timeline:", e);
     }
   };
-
-
-
-  
-
-  useEffect(() => {
-    let unsubscribe: () => void; // Variable to hold the unsubscribe function
-
-    const setupFirestoreListener = () => {
-      const user = auth.currentUser;
-      if (user) {
-        // Construct a query to get timelines specific to this user
-        // Data will be structured as: /users/{uid}/timelines/{timelineId}
-        const userTimelinesCollectionRef = collection(db, "users", user.uid, "timelines");
-        const q = query(userTimelinesCollectionRef); // You can add orderBy, limit etc. here
-
-        // Set up real-time listener
-        unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const loadedTimelines: { id: string; title: string; events: any[] }[] = [];
-          querySnapshot.forEach((doc) => {
-            // Include the document ID as the timeline's ID
-            loadedTimelines.push({ id: doc.id, ...doc.data() as any });
-          });
-          setTimelines(loadedTimelines);
-        }, (error) => {
-          console.error("Error listening to timelines:", error);
-        });
-      } else {
-        // No user logged in, clear timelines and ensure no listener is active
-        setTimelines([]);
-        // If there was a previous listener, unsubscribe it
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      }
-    };
-
-    // Listen for changes in authentication state
-    const authUnsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // User logged in, set up Firestore listener
-        setupFirestoreListener();
-      } else {
-        // User logged out, clear timelines and unsubscribe from Firestore
-        setTimelines([]);
-        if (unsubscribe) {
-          unsubscribe();
-          unsubscribe = undefined as any; // Clear the variable
-        }
-      }
-    });
-
-    // Cleanup function when component unmounts
-    return () => {
-      authUnsubscribe(); // Unsubscribe from auth state changes
-      if (unsubscribe) {
-        unsubscribe(); // Unsubscribe from Firestore listener
-      }
-    };
-  }, []); // Empty dependency array ensures this runs once on mount
-
-  // This useEffect is now for saving the timeline data to Firestore
-  // It will be triggered when route.params?.savedTimeline is set from EditScreen
-
-
-  // Your existing useEffect for `route.params?.cleared` remains the same if needed for local clearing,
-  // but if you clear from Firestore, the listener will update the state.
-  useEffect(() => {
-    if (route.params?.cleared) {
-      // You might want to delete ALL user timelines from Firestore here
-      // For now, it just clears local state if `cleared` param is true.
-      setTimelines([]); // clear in-memory state
-      navigation.setParams({ cleared: false });
-    }
-  }, [route.params?.cleared, navigation]);
 
   return (
     <View style={styles.container}>

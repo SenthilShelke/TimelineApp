@@ -17,8 +17,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@/theme/ThemeContext";
 import { ColorTheme } from "@/theme/themes";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/firebase";
+import { createTimeline, updateTimeline } from "@/api/timelines";
 
 const getStyles = (colors: ColorTheme["colors"]) =>
   StyleSheet.create({
@@ -227,26 +226,23 @@ const handleSaveTimeline = async () => {
     saveScale.value = withTiming(1, { duration: 100 });
   });
 
-  const timelineId = route.params?.id ?? simpleId();
-  const timelineData = {
-    id: timelineId,
-    title: timelineTitle,
-    events,
+  const existingId: string | undefined = route.params?.id;
+  const payload = {
+    title: timelineTitle.trim(),
+    events: events.map((e: any) => ({
+      title: e.title,
+      date: e.date,
+      description: e.description ?? "",
+      images: e.images ?? [],
+    })),
   };
 
   try {
-    const user = auth.currentUser;
-    if (!user) {
-      alert("No logged-in user found. Please log in again.");
-      return;
+    if (existingId) {
+      await updateTimeline(existingId, payload);
+    } else {
+      await createTimeline(payload);
     }
-
-    await setDoc(
-      doc(db, "users", user.uid, "timelines", timelineId),
-      timelineData
-    );
-
-    console.log("Timeline saved directly from EditScreen!");
 
     navigation.goBack();
   } catch (e) {
