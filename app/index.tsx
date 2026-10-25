@@ -30,12 +30,14 @@ export default function Index() {
   if (loading) return null;
 
   return (
+    <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={user ? "Home" : "Login"}>
-  <Stack.Screen name="Login" component={LoginScreen} />
-  <Stack.Screen name="Home" component={HomeScreen} />
-  <Stack.Screen name="Edit" component={EditScreen} />
-  <Stack.Screen name="View" component={ViewTimeline} />
-  <Stack.Screen name="Settings" component={SettingsScreen} />
-</Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Edit" component={EditScreen} />
+        <Stack.Screen name="View" component={ViewTimeline} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

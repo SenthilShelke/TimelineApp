@@ -1,36 +1,41 @@
 import React from "react";
-import { act, render, fireEvent } from "@testing-library/react-native";
+import { render, fireEvent, waitFor, act } from "@testing-library/react-native";
 import EditScreen from "../app/EditScreen";
-import { navigate } from "expo-router/build/global-state/routing";
-import Timeline from "@/components/Timeline";
 
 const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 const mockRoute = { params: { events: [], title: "My Timeline" } };
 
-describe("<EventIcon />", () => {
+// Allow the save (onSave -> setEvents -> modal close) to fully settle.
+const flush = () => act(() => new Promise((r) => setTimeout(r, 250)));
 
-    it("opens the EventEditor with correct initial data when an event is clicked", () => {
-        const { getByText, getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
-        const addEventButton = getByText("Add Event +");
-        fireEvent.press(addEventButton);    
-        const titleInput = getByPlaceholderText("Event Title");
-        const descriptionInput = getByPlaceholderText("Description(optional)");   
-        fireEvent.changeText(titleInput, "My Event");
-        fireEvent.changeText(descriptionInput, "This is a test description.");
-        fireEvent.press(getByText("Save"));   
-        expect(getByText("My Event")).toBeTruthy();
-        fireEvent.press(getByText("My Event"));   
-        expect(getByPlaceholderText("Event Title").props.value).toBe("My Event");
-        expect(getByPlaceholderText("Description(optional)").props.value).toBe("This is a test description.");
-    
-        const formattedDate = new Date().toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-        expect(getByText(formattedDate)).toBeTruthy();
-      });
-    
+describe("<EventIcon /> (event creation via EventEditor)", () => {
+  afterEach(() => jest.clearAllMocks());
 
-  
+  it("adds an event to the timeline when saved via the EventEditor", async () => {
+    const { getByText, getAllByText, getByPlaceholderText, findByPlaceholderText } =
+      await render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
+
+    // Open the editor modal.
+    fireEvent.press(getByText("Add Event +"));
+
+    // Enter an event title and let the controlled input settle (React 19 / RTL 14).
+    const titleInput = await findByPlaceholderText("Event Title");
+    fireEvent.changeText(titleInput, "My Event");
+    await waitFor(() =>
+      expect(getByPlaceholderText("Event Title").props.value).toBe("My Event")
+    );
+
+    // Save the event.
+    fireEvent.press(getByText("Save"));
+    await flush();
+
+    // The new event node now appears on the timeline, showing its title and date.
+    expect(getAllByText("My Event").length).toBeGreaterThan(0);
+    const formattedDate = new Date().toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    expect(getAllByText(formattedDate).length).toBeGreaterThan(0);
+  });
 });

@@ -1,35 +1,38 @@
 import React from "react";
-import { act, render, fireEvent, waitFor } from "@testing-library/react-native";
+import { render, fireEvent, waitFor } from "@testing-library/react-native";
 import EditScreen from "../app/EditScreen";
-import { navigate } from "expo-router/build/global-state/routing";
-import { Keyboard } from "react-native";
 
 const mockNavigation = { navigate: jest.fn(), goBack: jest.fn() };
 const mockRoute = { params: { events: [], title: "My Timeline" } };
 
 describe("<EditScreen />", () => {
-  it("updates the title TextInput value when typing", () => {
-    const { getByPlaceholderText } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
-    const titleInput = getByPlaceholderText("Title");
-    fireEvent.changeText(titleInput, "My New Timeline");
-    expect(titleInput.props.value).toBe("My New Timeline");
+  it("updates the title TextInput value when typing", async () => {
+    const { getByPlaceholderText } = await render(
+      <EditScreen navigation={mockNavigation} route={mockRoute} />
+    );
+    fireEvent.changeText(getByPlaceholderText("Title"), "My New Timeline");
+    await waitFor(() =>
+      expect(getByPlaceholderText("Title").props.value).toBe("My New Timeline")
+    );
   });
 
-  it("opens EventEditor when 'New Event +' button is pressed", () => {
-    const { getByText, queryByText } = render(<EditScreen navigation={mockNavigation} route={mockRoute}/>);
+  it("opens EventEditor when 'New Event +' button is pressed", async () => {
+    const { getByText, queryByText, findByText } = await render(
+      <EditScreen navigation={mockNavigation} route={mockRoute} />
+    );
     expect(queryByText("Save")).toBeNull();
-    const addEventButton = getByText("Add Event +");
-    fireEvent.press(addEventButton);
-    expect(getByText("Save")).toBeTruthy();
+    fireEvent.press(getByText("Add Event +"));
+    expect(await findByText("Save")).toBeTruthy();
   });
 
-  it("closes the EventEditor modal when clicking outside of it", () => {
-    const { getByText, getByPlaceholderText, queryByPlaceholderText, getByTestId } = render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
-    const addEventButton = getByText("Add Event +");
-    fireEvent.press(addEventButton);
-    expect(getByPlaceholderText("Event Title")).toBeTruthy();
-    const dismissArea = getByTestId("dismiss-area");
-    fireEvent.press(dismissArea);
-    expect(queryByPlaceholderText("Event Title")).toBeNull();
+  it("closes the EventEditor modal when clicking outside of it", async () => {
+    const { getByText, findByPlaceholderText, queryByPlaceholderText, getByTestId } =
+      await render(<EditScreen navigation={mockNavigation} route={mockRoute} />);
+    fireEvent.press(getByText("Add Event +"));
+    expect(await findByPlaceholderText("Event Title")).toBeTruthy();
+    fireEvent.press(getByTestId("dismiss-area"));
+    await waitFor(() =>
+      expect(queryByPlaceholderText("Event Title")).toBeNull()
+    );
   });
 });
